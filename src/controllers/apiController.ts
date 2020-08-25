@@ -1,7 +1,8 @@
-import { Controller, Param, Body, Get, Post, Put, Delete } from "routing-controllers";
+import { Controller, Param, Body, Get, Post, QueryParam, Put, Delete } from "routing-controllers";
 import UserService from '../services/common/UserService';
 import ModuleService from '../services/manage-center/moduleService';
 import ElementService from '../services/manage-center/elementService';
+import OssService from '../services/aliyun/ossService'
 import QrCodeUtils from '../utils/qrCodeUtil';
 @Controller()
 export class ApiController {
@@ -38,6 +39,24 @@ export class ApiController {
             data: QrCodeUtils.getQrCodeImageFromUrl(body.query)
          };
          return json;
+      } catch (err) {
+         return err;
+      }
+   }
+
+   @Get("/api/getAliYunOssPolicy")
+   async getAliYunOssPolicy(@QueryParam('targetDir') targetDir: string) {
+      try {
+         return await OssService.getAliYunOssPolicy(targetDir);
+      } catch (err) {
+         return err;
+      }
+   }
+
+   @Post("/api/AliYunOssCallback")
+   async AliYunOssCallback() {
+      try {
+         return await OssService.AliYunOssCallback();
       } catch (err) {
          return err;
       }
