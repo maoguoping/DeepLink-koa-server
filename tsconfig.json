@@ -10,12 +10,14 @@
         "baseUrl": ".",
         "paths": {
             "*": [
-                "node_modules/*",
-                "src/types/*"
-            ]
-        }
+                "node_modules/*"
+            ],
+            "aliyun-sdk": ["types/aliyun-sdk"]
+        },
+        "typeRoots" : ["./node_modules/@types", "./typings"]
     },
     "include": [
-        "src/**/*"
+        "src/**/*",
+        "typings/aliyun-sdk/index.d.ts"
     ]
 }
