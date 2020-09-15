@@ -3,6 +3,7 @@
  * @param insertObj {Object} 插入配置
  * @return {AudioNode | void}
  */
+import { inputValueFormat } from '../utils'
 export interface InsertParams {
     [propName: string]: any;
 }
@@ -12,23 +13,21 @@ export function insert(insertObj: InsertParams) {
     let fieldArr: any[] = [];
     let valueArr: string[] = [];
     if(Array.isArray(insertObj)  && insertObj.length > 0 ){
+        // 获取插入对象的真实field
         let nameArr = Object.keys(insertObj[0]);
         fieldArr = nameArr.map( obj => this[obj]);
-        insertObj.length > 0 && insertObj.forEach(item => {
+        insertObj.forEach(item => {
             let innerArr: string[] = [];
             nameArr.forEach((name)=>{
                 let obj = item[name];
                 if(obj === undefined || obj === null){
                     innerArr.push(data[name].default());
-                }else if(typeof obj == 'number'){
-                    innerArr.push(`${obj}`);
                 }else {
-                    innerArr.push(`'${obj}'`) ;
+                    innerArr.push(<string>inputValueFormat(obj));
                 }
             });
             valueArr.push(`(${innerArr.join(',')})`);
         });
-        this.sqlSections.insert =`INSERT INTO ${this.tableName}(${fieldArr.join(',')}) VALUES ${valueArr.join(',')}`;
     }else {
         dataArr.length > 0 && dataArr.forEach(name => {
             let item = insertObj[name];
@@ -48,7 +47,8 @@ export function insert(insertObj: InsertParams) {
             }
             valueArr.push(value);
         });
-        this.sqlSections.insert =`INSERT INTO ${this.tableName}(${fieldArr.join(',')}) VALUES(${valueArr.join(',')})`;
+        
     }
+    this.sqlSections.insert =`INSERT INTO ${this.tableName}(${fieldArr.join(',')}) VALUES(${valueArr.join(',')})`;
     return this;
 };
