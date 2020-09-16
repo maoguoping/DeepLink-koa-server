@@ -1,5 +1,5 @@
 import {createConnection, QueryError, RowDataPacket, Pool, PoolOptions} from 'mysql2';
-import Model from './model'
+import { Model } from './model';
 type Order = {
   type: string;
   by: string;

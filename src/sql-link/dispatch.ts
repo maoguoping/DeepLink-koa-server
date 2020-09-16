@@ -6,6 +6,18 @@ export interface DispatchProps {
     reducer?: Reducer,
     param?: any
 }
+
+export interface DispatchType {
+    name: string,
+    reducer?: Reducer,
+    param?: any,
+    isFn: boolean
+}
+
+export interface SelectorDispatch {
+    name: string;
+    reducer: () => void;
+}
 export class Dispatch {
     public name: string;
     public reducer: Reducer;

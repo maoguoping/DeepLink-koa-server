@@ -1,21 +1,17 @@
 import {createConnection, QueryError, RowDataPacket, Pool, PoolOptions} from 'mysql2';
-import log4js = require('log4js');
 import _ = require('lodash');
-log4js.configure({
-  appenders: {cheese: {type: 'file', filename: 'cheese.log'}},
-  categories: {default: {appenders: ['cheese'], level: 'info'}}
-});
-const logger = log4js.getLogger('cheese');
+import {logger} from './log';
 import FnObj from './FnObj';
-import { Dispatch } from './dispatch';
+import { Dispatch, SelectorDispatch } from './dispatch';
+import { query } from './query';
+import { join, JoinParams } from './sentence/join';
+import { select, SelectParams } from './sentence/select';
 import { where, WhereParams } from './sentence/where';
 import { insert, InsertParams } from './sentence/insert';
 import { update, UpdateParams } from './sentence/update';
-export interface SelectorDispatch {
-  name: string;
-  reducer: () => void;
-}
-class Model {
+import { mixin } from './mixin'
+
+export class Model {
   public context: any;
   public _pool: Pool;
   public model: any;
@@ -78,53 +74,11 @@ class Model {
    * @param selector {String} 查询配置
    * @return {AudioNode | void}
    */
-  select(selector: string | undefined | SelectorDispatch | any[]): Model{
+  select(selector: string | undefined | SelectorDispatch | any[]): Model {
     //标注类型
     this.clearSqlSections();
     this.actionType = 'select';
-    let arr: any[] = [],
-      data = this.data,
-      staticData = this.staticData;
-    let fullNameChange = function (that: Model, dataArr: any[], tableName: string, arr: any[]) {
-      dataArr.length > 0 && dataArr.forEach((name: string) => {
-        let fullName = `${tableName}.${that[name]}`;
-        that._keyWithField[name] = fullName;
-        arr.push(`${fullName} AS ${name}`);
-      });
-    }
-    //无参数
-    if (_.isEmpty(selector)) {
-      let dataArr = Object.keys(data);
-      fullNameChange(this, dataArr, this.tableName, arr);
-      if (staticData) {
-        let staticDataArr = Object.keys(staticData);
-        staticDataArr.length > 0 && staticDataArr.forEach(name => {
-          let item = staticData[name];
-          let fullName = `${this.tableName}.${item.value}`;
-          this._keyWithField[name] = name;
-          arr.push(`'${fullName}' AS ${name}`);
-        });
-      }
-      this.sqlSections.select = `SELECT ${arr.join(',')}`;
-      this.attrStr = `${arr.join(',')}`;
-    } else if (selector instanceof Dispatch) {
-      let excludeList = selector.reducer();
-      let dataArr = Object.keys(data).filter((name) => {
-        return !excludeList.includes(name);
-      });
-      fullNameChange(this,dataArr,this.tableName,arr);
-      if (staticData) {
-        let staticDataArr = Object.keys(staticData);
-        staticDataArr.length > 0 && staticDataArr.forEach(name => {
-          let item = staticData[name];
-          this._keyWithField[name] = name;
-          arr.push(`'${item.value}' AS ${name}`);
-        });
-      }
-      this.sqlSections.select = `SELECT ${arr.join(',')}`;
-      this.attrStr = `${arr.join(',')}`;
-    }
-    return this;
+    return select.call(this, selector);
   }
 
   /**
@@ -132,7 +86,7 @@ class Model {
    * @param updateObj {Object} 查询配置
    * @return {AudioNode | void}
    */
-  update(updateObj: UpdateParams) {
+  update(updateObj: UpdateParams): Model {
     //标注类型
     this.clearSqlSections();
     this.actionType = 'update';
@@ -144,7 +98,7 @@ class Model {
    * @param insertObj {Object} 插入配置
    * @return {AudioNode | void}
    */
-  insert(insertObj: InsertParams) {
+  insert(insertObj: InsertParams): Model {
     //标注类型
     this.clearSqlSections();
     this.actionType = 'insert';
@@ -155,7 +109,7 @@ class Model {
    * SQL删除
    * @return {AudioNode | void}
    */
-  delete() {
+  delete(): Model {
     //标注类型
     this.clearSqlSections();
     this.actionType = 'delete';
@@ -167,7 +121,7 @@ class Model {
    * SQL 条件
    * @param whereObj {Object}
    */
-  where(whereObj: WhereParams) {
+  where(whereObj: WhereParams): Model {
     return where.call(this, whereObj);
   }
 
@@ -175,126 +129,16 @@ class Model {
    * SQL 关联
    * @param joinObj {Object}
    */
-  join(joinObj: {[propName: string]: any}) {
-    let namespaceArr = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i'];
-    let namespaceIndex = 0;
-    let ModelsArr = Object.keys(joinObj);
-    let Models = this.context.Models;
-    let joinArr:string [] = [];
-    let selectSql = this.sqlSections.select;
-    let selectArr:string [] = [];
-    ModelsArr.forEach((name) => {
-      let model = Models[name];
-      //name为混入Model名称
-      if (name === this._name) {
-
-      } else {
-        let joinOption = joinObj[name];
-        let sameModelArr = [];
-        if (!Array.isArray(joinOption)) {
-          sameModelArr.push(joinOption);
-        } else {
-          sameModelArr = joinOption;
-        }
-
-        sameModelArr.forEach(item => {
-          let targetField = model[item.t];
-          let sourceField = this[item.s];
-          let spaceName = namespaceArr[namespaceIndex++];
-          let str = ` LEFT JOIN ${Models[name].tableName} ${spaceName} ON ${spaceName}.${targetField}=${this.tableName}.${sourceField}`;
-          joinArr.push(str);
-          //join是否存在分组条件
-          if (item._selectGroup && item._selectGroup.name) {
-            let name = item._selectGroup.name;
-            let _selectGroup = this._selectGroup;
-            if (!_selectGroup[name]) {
-              _selectGroup[name] = [];
-            }
-            _selectGroup[name].push({
-              condition: item._selectGroup.condition,
-              fullname: `${spaceName}.${model[item._selectGroup.field]}`
-            });
-          } else {
-            let nameObj: any = {};
-            nameObj[name] = [];
-            nameObj[name].push(spaceName);
-            this._joinField = Object.assign(
-              this._joinField, nameObj
-            );
-            let joinModel = null;
-            if (item.select) {
-              joinModel = Models[name].mixin(spaceName, item.select);
-              selectArr.push(joinModel.attrStr);
-            } else {
-              joinModel = Models[name].mixin(spaceName);
-              selectArr.push(joinModel.attrStr);
-            }
-            Object.assign(this._keyWithField, joinModel._keyWithField);
-          }
-        })
-
-      }
-    });
-
-    this.sqlSections.join = joinArr.join('');
-    // if(selectSql === ''){
-    selectSql += `,`;
-    // }
-    let _selectGroupArr = Object.keys(this._selectGroup);
-    _selectGroupArr.forEach((name) => {
-      let group = this._selectGroup[name];
-      let sql = `CASE `;
-      group.forEach((item: any) => {
-        sql += `WHEN ${item.condition} THEN ${item.fullname} `
-      });
-      sql += ` END '${name}'`
-      selectArr.push(sql);
-    });
-    selectSql += selectArr.join(',');
-    this.sqlSections.select = selectSql;
-    return this;
+  join(joinObj: {[propName: string]: any}): Model {
+    return join.call(this, joinObj);
   }
 
   /**
    * 数据获取
    * @return {Promise<any>}
    */
-  query() {
-    let pool = this._pool;
-    let _sql = '';
-    let sections = this.sqlSections;
-    _sql += sections.insert || sections.delete || sections.update || sections.select;
-    if (sections.select) {
-      _sql += ` FROM ${this.tableName}`
-    }
-    _sql += sections.join || '';
-    if (sections.where) {
-      _sql += ` WHERE ${sections.where}`
-    }
-    console.log(_sql);
-    logger.info(_sql);
-    if(this.context.isTest) {
-      return _sql;
-    } else {
-      return new Promise((resolve, reject) => {
-        pool.getConnection((err, connection) => {
-          if(err) {
-              console.log(err);
-              reject(err);
-          } else {
-              connection.query(_sql, (err, results, fields) => {
-                  if (err) {
-                      reject(err)
-                  } else {
-                      resolve(results);
-                  }
-                  // 释放连接
-                  connection.release();
-              });
-          }
-        });
-      });
-    } 
+  query(): Promise<any> {
+    return query.call(this);
   }
 
   /**
@@ -304,64 +148,7 @@ class Model {
    * @return {AudioNode | void}
    */
   mixin(spaceName: string, selector: string | undefined | SelectorDispatch | any[]) {
-    if (selector == '' || selector == undefined) {
-      let arr: string[] = [];
-      let data = this.data;
-      let staticData = this.staticData;
-      let dataArr = Object.keys(data);
-      if (dataArr.length > 0) {
-        dataArr.forEach(name => {
-          let item = data[name];
-          let fullName = `${spaceName}.${this[name]}`;
-          this._keyWithField[name] = fullName;
-          arr.push(`${spaceName}.${this[name]} AS ${name}`);
-        });
-      }
-      if (staticData) {
-        let staticDataArr = Object.keys(staticData);
-        staticDataArr.length > 0 && staticDataArr.forEach(name => {
-          let item = staticData[name];
-          this._keyWithField[name] = name;
-          arr.push(`'${item.value}' AS ${name}`);
-        });
-      }
-      this.sqlSections.select = `SELECT ${arr.join(',')}`;
-      this.attrStr = `${arr.join(',')}`;
-    } else if (selector instanceof Dispatch) {
-      let arr = [];
-      let data = this.data;
-      let staticData = this.staticData;
-      let dataArr = [];
-      if (selector.name === 'exclude') {
-        let excludeList = selector.reducer();
-        dataArr = Object.keys(data).filter((name) => {
-          return !excludeList.includes(name);
-        });
-        if (dataArr.length > 0) {
-          dataArr.forEach(name => {
-            let item = data[name];
-            let fullName = `${spaceName}.${this[name]}`;
-            this._keyWithField[name] = fullName;
-            arr.push(`${fullName} AS ${name}`);
-          });
-        }
-      } else if (selector.name === 'definition') {
-        let definition = selector.reducer(this.context.Models[this._name], spaceName);
-        arr.push(definition);
-      }
-
-      if (staticData) {
-        let staticDataArr = Object.keys(staticData);
-        staticDataArr.length > 0 && staticDataArr.forEach(name => {
-          let item = staticData[name];
-          this._keyWithField[name] = name;
-          arr.push(`'${item.value}' AS ${name}`);
-        });
-      }
-      this.sqlSections.select = `SELECT ${arr.join(',')}`;
-      this.attrStr = `${arr.join(',')}`;
-    }
-    return this;
+    return mixin.call(this, spaceName, selector)
   }
   /**
    * SQL清空
@@ -380,5 +167,3 @@ class Model {
     };
   }
 }
-
-export default Model;

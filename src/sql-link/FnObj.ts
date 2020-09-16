@@ -1,5 +1,5 @@
 import { Fn } from './fn'
-import Model from './model'
+import { Model } from './model';
 class FnObj {
   public currentModel: Model;
   public currentFn: any;
@@ -45,7 +45,7 @@ class FnObj {
    * FnObj解析函数
    * @return {string}
    */
-  resolve() {
+  resolve(): string {
     let output = '';
     //子节点解析
     if (this.childObj.length > 0) {

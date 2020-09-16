@@ -1,6 +1,6 @@
-import {createConnection, QueryError, RowDataPacket, Pool, PoolOptions} from 'mysql2';
-import Model from './model'
-class ModelList {
+import {createConnection, QueryError, RowDataPacket, Pool, PoolOptions, PoolConnection} from 'mysql2';
+import { Model } from './model'
+export class ModelList {
     public list: Model[];
     public pool: Pool;
     constructor(list: any[]) {
@@ -29,7 +29,7 @@ class ModelList {
         console.log(`${Date()} mysql:`);
         console.log(sql);
         return new Promise((resolve, reject) => {
-            pool.getConnection((err, connection) => {
+            pool.getConnection((err, connection: PoolConnection) => {
                 connection.query(sql, (err, results, fields) => {
                     if (err) {
                         reject(err)
@@ -43,5 +43,3 @@ class ModelList {
         });
     }
 }
-
-export default ModelList;

@@ -1,9 +1,9 @@
 import mysql = require('mysql2') ;
 import fs = require('fs');
 import path = require('path');
-import {createConnection, QueryError, RowDataPacket, Pool, PoolOptions} from 'mysql2';
-import Model from './model';
-import ModelList from './modelList';
+import { Pool, PoolOptions} from 'mysql2';
+import { Model } from './model';
+import { ModelList } from './modelList';
 import { Page } from './page';
 import { Fn } from './fn';
 export interface SqlLinkOption {

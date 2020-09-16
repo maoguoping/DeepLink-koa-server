@@ -1,5 +1,5 @@
-import {Dispatch, DispatchProps} from './dispatch'
-import Model from './model';
+import { Dispatch, DispatchProps} from './dispatch'
+import { Model } from './model';
 interface Definition {
   (DefinitionProps: {
     [propName: string]: any;
