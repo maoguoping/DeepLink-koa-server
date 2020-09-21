@@ -8,18 +8,21 @@ export default class ElementService {
     /**
      * 获取元素类别列表
      */
-    public static getElementTypeDic() {
-        return new Promise((resolve, reject) => {
-          Models.elementType.select().query().then((result: any)=>{
-            let ret = {
-              success: true,
-              message: `获取元素类别列表成功！`,
-              data: result
-            };
-            resolve(ret);
-          }).catch((e: Error) =>{
-            reject(e);
-          })
-        });
+    public static async getElementTypeDic() {
+      try {
+        let result = await Models.elementType.select().query()
+        return {
+          success: true,
+          message: `获取元素类别列表成功！`,
+          data: result
+        };
+      } catch (e) {
+        return {
+          success: true,
+          message: `获取元素类别列表失败！`,
+          data: []
+        };
+      }
+      
     }
 }
