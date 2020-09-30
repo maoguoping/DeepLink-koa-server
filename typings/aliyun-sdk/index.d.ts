@@ -1,7 +1,7 @@
 declare namespace RAM {
     interface Options {
         accessKeyId: string;
-        AccessKeysecret: string;
+        secretAccessKey: string;
         endpoint: string;
         apiVersion: string;
         [propName: string]: any;

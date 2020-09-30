@@ -46,7 +46,7 @@ export class AliOss {
         let opt = {
             region: 'oss-cn-huhehaote',
             accessKeyId: config.aliYunRam.accessKeyId,
-            accessKeySecret: config.aliYunRam.AccessKeysecret
+            accessKeySecret: config.aliYunRam.secretAccessKey
         };
         opt = Object.assign(opt, OssInfo);
         this.ossClient = new OSS(opt);
@@ -79,7 +79,7 @@ export class AliOss {
 export function getCallbackInfo(dir: string) {
     return {
         accessId: config.aliYunRam.accessKeyId,
-        accessKey: config.aliYunRam.AccessKeysecret,
+        accessKey: config.aliYunRam.secretAccessKey,
         endpoint: config.aliYunRam.endpoint,
         bucket: config.aliYunRam.bucket,
         dir,
