@@ -125,8 +125,8 @@ export default class UserSettingService {
                 t:'roleId'
             }
         }).where([{
-            name:'user.username',
-            equal:username
+            name: 'user.username',
+            equal: username
         }]).query()
         let ret = null;
         if (results.length > 0) {

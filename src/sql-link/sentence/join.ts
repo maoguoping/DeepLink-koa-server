@@ -22,18 +22,12 @@ export function join(joinObj: JoinParams) {
 
     } else {
       let joinOption = joinObj[name];
-      let sameModelArr = [];
-      if (!Array.isArray(joinOption)) {
-        sameModelArr.push(joinOption);
-      } else {
-        sameModelArr = joinOption;
-      }
-
+      let sameModelArr = !Array.isArray(joinOption) ? [joinOption] : joinOption;
       sameModelArr.forEach(item => {
         let targetField = model[item.t];
         let sourceField = this[item.s];
         let spaceName = namespaceArr[namespaceIndex++];
-        let str = ` LEFT JOIN ${Models[name].tableName} ${spaceName} ON ${spaceName}.${targetField}=${this.tableName}.${sourceField}`;
+        let str = ` LEFT JOIN ${model.tableName} ${spaceName} ON ${spaceName}.${targetField}=${this.tableName}.${sourceField}`;
         joinArr.push(str);
         //join是否存在分组条件
         if (item._selectGroup && item._selectGroup.name) {
@@ -48,19 +42,13 @@ export function join(joinObj: JoinParams) {
           });
         } else {
           let nameObj: any = {};
-          nameObj[name] = [];
-          nameObj[name].push(spaceName);
+          nameObj[name] = [spaceName];
           this._joinField = Object.assign(
             this._joinField, nameObj
           );
           let joinModel = null;
-          if (item.select) {
-            joinModel = Models[name].mixin(spaceName, item.select);
-            selectArr.push(joinModel.attrStr);
-          } else {
-            joinModel = Models[name].mixin(spaceName);
-            selectArr.push(joinModel.attrStr);
-          }
+          joinModel = model.mixin(spaceName, item.select);
+          selectArr.push(joinModel.attrStr);
           Object.assign(this._keyWithField, joinModel._keyWithField);
         }
       })

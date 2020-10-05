@@ -9,6 +9,14 @@ import { Dispatch, DispatchType } from '../dispatch'
 export interface SelectParams {
     [propName: string]: any;
 }
+// select 名称变换
+function fullNameChange (that: Model, dataArr: any[], tableName: string, arr: any[]) {
+  dataArr.length > 0 && dataArr.forEach((name: string) => {
+    let fullName = `${tableName}.${that[name]}`;
+    that._keyWithField[name] = fullName;
+    arr.push(`${fullName} AS ${name}`);
+  });
+}
 export function select(selector: SelectParams) {
     //标注类型
     this.clearSqlSections();
@@ -16,14 +24,7 @@ export function select(selector: SelectParams) {
     let arr: any[] = [],
       data = this.data,
       staticData = this.staticData;
-    let fullNameChange = function (that: Model, dataArr: any[], tableName: string, arr: any[]) {
-      dataArr.length > 0 && dataArr.forEach((name: string) => {
-        let fullName = `${tableName}.${that[name]}`;
-        that._keyWithField[name] = fullName;
-        arr.push(`${fullName} AS ${name}`);
-      });
-    }
-    //无参数
+    //无参数即为查询Model全部数据
     if (_.isEmpty(selector)) {
       let dataArr = Object.keys(data);
       fullNameChange(this, dataArr, this.tableName, arr);
@@ -36,8 +37,7 @@ export function select(selector: SelectParams) {
           arr.push(`'${fullName}' AS ${name}`);
         });
       }
-      this.sqlSections.select = `SELECT ${arr.join(',')}`;
-      this.attrStr = `${arr.join(',')}`;
+     
     } else if (selector instanceof Dispatch) {
       let excludeList = selector.reducer();
       let dataArr = Object.keys(data).filter((name) => {
@@ -52,8 +52,8 @@ export function select(selector: SelectParams) {
           arr.push(`'${item.value}' AS ${name}`);
         });
       }
-      this.sqlSections.select = `SELECT ${arr.join(',')}`;
-      this.attrStr = `${arr.join(',')}`;
     }
+    this.sqlSections.select = `SELECT ${arr.join(',')}`;
+    this.attrStr = `${arr.join(',')}`;
     return this;
 };
