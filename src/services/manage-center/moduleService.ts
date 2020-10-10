@@ -15,16 +15,8 @@ export default class ModuleService {
     let page = new Page(
       Models.module.select().join({
         folderType: [
-          {
-            s: 'typeId',
-            t: 'id',
-            select: Fn.exclude(['id'])
-          },
-          {
-            s: 'parentTypeId',
-            t: 'id',
-            select: Fn.exclude(['id'])
-          }
+          (join: any) => join('typeId', 'id', { select: Fn.exclude(['id'])}),
+          (join: any) => join('parentTypeId', 'id', { select: Fn.exclude(['id'])})
         ]
       }).where({
         'module.parentPathId': parentPathId
@@ -139,57 +131,49 @@ export default class ModuleService {
   public static async getModuleInfoByPathId(pathId: string) {
     let results = await Models.module.select().join({
       folderType: [
-        {
-          s: 'typeId',
-          t: 'id',
-          select: Fn.definition({
-            name: 'folderTypeName'
-          }),
-          _selectGroup: {
-            name: 'typeName',
-            condition: 'module_list.module_type=0',
-            field: 'name'
-          }
-        },
-        {
-          s: 'parentTypeId',
-          t: 'id',
-          select: Fn.definition({
-            name: 'folderParentTypeName'
-          }),
-          _selectGroup: {
-            name: 'parentTypeName',
-            condition: 'module_list.module_type=0',
-            field: 'name'
-          }
-        }
-      ],
-      elementType: [
-        {
-          s: 'typeId',
-          t: 'id',
-          select: Fn.definition({
-            name: 'elementTypeName'
-          }),
-          _selectGroup: {
-            name: 'typeName',
-            condition: 'module_list.module_type=1',
-            field: 'name'
-          }
-        },
-        {
-          s: 'parentTypeId',
-          t: 'id',
-          select: Fn.definition({
-            name: 'elementParentTypeName'
-          }),
-          _selectGroup: {
-            name: 'parentTypeName',
-            condition: 'module_list.module_type=1',
-            field: 'name'
-          }
-        }
-      ]
+        (join: any) =>  join('typeId', 'id', {
+             select: Fn.definition({
+                 name: 'folderTypeName'
+             }),
+             _selectGroup: {
+                 name: 'typeName',
+                 condition: 'module_list.module_type=0',
+                 field: 'name'
+             }
+        }),
+        (join: any) =>  join('parentTypeId', 'id', {
+             select: Fn.definition({
+                 name: 'folderParentTypeName'
+             }),
+             _selectGroup: {
+                 name: 'parentTypeName',
+                 condition: 'module_list.module_type=0',
+                 field: 'name'
+             }
+         })
+     ],
+     elementType: [
+         (join: any) =>  join('typeId', 'id', {
+             select: Fn.definition({
+                 name: 'elementTypeName'
+             }),
+             _selectGroup: {
+                 name: 'typeName',
+                 condition: 'module_list.module_type=1',
+                 field: 'name'
+             }
+         }),
+         (join: any) =>  join('parentTypeId', 'id', {
+             select: Fn.definition({
+                 name: 'elementParentTypeName'
+             }),
+             _selectGroup: {
+                 name: 'parentTypeName',
+                 condition: 'module_list.module_type=1',
+                 field: 'name'
+             }
+         })
+     ]
     }).where({
       'module.pathId': pathId
     }).query()

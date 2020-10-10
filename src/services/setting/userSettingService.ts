@@ -14,20 +14,12 @@ export default class UserSettingService {
         let createTimeArr = (createTime === '') ? [] : createTime.split(',');
         let lastLoginTimeArr = (lastLoginTime === '') ? [] : lastLoginTime.split(',');
         let page = new Page(Models.userRoleRelation.select().join({
-            user: [
-                {
-                    s: 'userId',
-                    t: 'userId',
-                    select: Fn.exclude(['userId'])
-                }
-            ],
-            role: [
-                {
-                    s: 'roleId',
-                    t: 'roleId',
-                    select: Fn.exclude(['roleId'])
-                }
-            ]
+            user: (join: any) => join('userId', 'userId', {
+                select: Fn.exclude(['userId'])
+            }),
+            role: (join: any) => join('roleId', 'roleId', {
+                select: Fn.exclude(['roleId'])
+            })
         }).where({
             'user.username': Fn.equalEmptyAll(username, Fn.like(username, () => `'%${username}%'`)),
             'user.userId': Fn.equalEmptyAll(userId, Fn.like(userId, () => `'%${userId}%'`)),
@@ -116,18 +108,11 @@ export default class UserSettingService {
      */
     static async getUserListByUserName(username: string) {
         let results = await Models.userRoleRelation.select(Fn.exclude(['userId','roleId'])).join({
-            user:{
-                s:'userId',
-                t:'userId'
-            },
-            role:{
-                s:'roleId',
-                t:'roleId'
-            }
-        }).where([{
-            name: 'user.username',
-            equal: username
-        }]).query()
+            user: (join: any) => join('userId', 'userId'),
+            role: (join: any) => join('roleId', 'roleId')
+        }).where({
+            'user.username': username
+        }).query()
         let ret = null;
         if (results.length > 0) {
             ret = {success: true, userList:results,}

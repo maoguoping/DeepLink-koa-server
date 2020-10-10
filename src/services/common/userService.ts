@@ -104,14 +104,8 @@ export default class UserService {
             let results = await Models.userRoleRelation.select(
                 Fn.exclude(['userId','roleId'])
             ).join({
-                user:{
-                s:'userId',
-                t:'userId'
-                },
-                role:{
-                s:'roleId',
-                t:'roleId'
-                }
+                user: (join: any) => join('userId', 'userId'),
+                role: (join: any) => join('roleId', 'roleId')
             }).where({
             'user.username': username
             }).query()
@@ -132,14 +126,8 @@ export default class UserService {
         let results = await Models.userRoleRelation.select(
             Fn.exclude(['userId','roleId'])
         ).join({
-            user:{
-                s:'userId',
-                t:'userId'
-            },
-            role:{
-                s:'roleId',
-                t:'roleId'
-            }
+            user: (join: any) => join('userId', 'userId'),
+            role: (join: any) => join('roleId', 'roleId')
         }).where({
             'user.userId': userId
         }).query()

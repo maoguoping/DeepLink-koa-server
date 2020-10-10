@@ -52,3 +52,66 @@ describe('基本sql语句测试', () => {
         expect(userDeleteSql).to.equal(testSql.deleteUser);
     })
 })
+describe('where语句测试', () => {
+    it('where指定Model名称', () => {
+        const whereModelparse = user.select().where(
+            {
+                'user.username': '123', 
+            }
+        ).query()
+        expect(whereModelparse).to.equal(testSql.whereModelNameDeclare);
+    })
+})
+describe('join语句测试', () => {
+    it('join名称', () => {
+        const renameJoin = Models.module.select().join({
+            folderType: [
+               (join: any) =>  join('typeId', 'id', {
+                    select: Fn.definition({
+                        name: 'folderTypeName'
+                    }),
+                    _selectGroup: {
+                        name: 'typeName',
+                        condition: 'module_list.module_type=0',
+                        field: 'name'
+                    }
+               }),
+               (join: any) =>  join('parentTypeId', 'id', {
+                    select: Fn.definition({
+                        name: 'folderParentTypeName'
+                    }),
+                    _selectGroup: {
+                        name: 'parentTypeName',
+                        condition: 'module_list.module_type=0',
+                        field: 'name'
+                    }
+                })
+            ],
+            elementType: [
+                (join: any) =>  join('typeId', 'id', {
+                    select: Fn.definition({
+                        name: 'elementTypeName'
+                    }),
+                    _selectGroup: {
+                        name: 'typeName',
+                        condition: 'module_list.module_type=1',
+                        field: 'name'
+                    }
+                }),
+                (join: any) =>  join('parentTypeId', 'id', {
+                    select: Fn.definition({
+                        name: 'elementParentTypeName'
+                    }),
+                    _selectGroup: {
+                        name: 'parentTypeName',
+                        condition: 'module_list.module_type=1',
+                        field: 'name'
+                    }
+                })
+            ]
+          }).where({
+            'module.pathId': '/111'
+          }).query()
+        expect(renameJoin).to.equal(testSql.renameJoin);
+    })
+})
