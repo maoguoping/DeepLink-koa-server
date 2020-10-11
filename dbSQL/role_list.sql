@@ -5,5 +5,5 @@ CREATE TABLE `role_list` (
   `role_name` varchar(64) NOT NULL COMMENT '角色名称',
   `create_time` datetime NOT NULL COMMENT '角色创建时间',
   `description` varchar(200) DEFAULT NULL COMMENT '角色描述',
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+  PRIMARY KEY (`id`) USING BTREE
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8;

@@ -1,6 +1,7 @@
 import { Dispatch, SelectorDispatch } from './dispatch'
 export function mixin(spaceName: string, selector: string | undefined | SelectorDispatch | any[]) {
-  let _keyWithField = this._keyWithField
+  let _keyWithField = this._keyWithField;
+  let _this = this;
   function handleStaticData (staticData: any): string[] {
     let staticDataArr = Object.keys(staticData);
     let arr:string [] = []
@@ -15,7 +16,7 @@ export function mixin(spaceName: string, selector: string | undefined | Selector
     let arr: string[] = []
     dataArr.forEach((name: string) => {
       let item = data[name];
-      let fullName = `${spaceName}.${this[name]}`;
+      let fullName = `${spaceName}.${_this[name]}`;
       _keyWithField[name] = fullName;
       arr.push(`${fullName} AS ${name}`);
     });

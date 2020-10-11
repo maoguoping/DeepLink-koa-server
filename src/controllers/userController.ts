@@ -55,4 +55,13 @@ export class UserController {
                return err;
           }
      }
+     @Post("/users/getPageAcceessList")
+     async getPageAcceessList(@Body() body: any, action: Action) {
+          try {
+               let data = await UserService.getPageAcceessList(body.userId)
+               return {success: true, message: '获取权限列表', data};
+          } catch (err) {
+               return err;
+          }
+     }
 }

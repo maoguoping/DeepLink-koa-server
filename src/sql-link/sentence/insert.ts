@@ -49,6 +49,6 @@ export function insert(insertObj: InsertParams) {
         });
         
     }
-    this.sqlSections.insert =`INSERT INTO ${this.tableName}(${fieldArr.join(',')}) VALUES(${valueArr.join(',')})`;
+    this.sqlSections.insert =`INSERT INTO ${this.tableName}(${fieldArr.join(',')}) VALUES${valueArr.join(',')}`;
     return this;
 };

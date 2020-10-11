@@ -14,10 +14,10 @@ export default class UserSettingService {
         let createTimeArr = (createTime === '') ? [] : createTime.split(',');
         let lastLoginTimeArr = (lastLoginTime === '') ? [] : lastLoginTime.split(',');
         let page = new Page(Models.userRoleRelation.select().join({
-            user: (join: any) => join('userId', 'userId', {
+            user: (join: any) => join('user.userId', 'userId', {
                 select: Fn.exclude(['userId'])
             }),
-            role: (join: any) => join('roleId', 'roleId', {
+            role: (join: any) => join('role.roleId', 'roleId', {
                 select: Fn.exclude(['roleId'])
             })
         }).where({
@@ -108,8 +108,8 @@ export default class UserSettingService {
      */
     static async getUserListByUserName(username: string) {
         let results = await Models.userRoleRelation.select(Fn.exclude(['userId','roleId'])).join({
-            user: (join: any) => join('userId', 'userId'),
-            role: (join: any) => join('roleId', 'roleId')
+            user: (join: any) => join('user.userId', 'userId'),
+            role: (join: any) => join('role.roleId', 'roleId')
         }).where({
             'user.username': username
         }).query()

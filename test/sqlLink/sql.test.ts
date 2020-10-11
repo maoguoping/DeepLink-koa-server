@@ -66,7 +66,7 @@ describe('join语句测试', () => {
     it('join名称', () => {
         const renameJoin = Models.module.select().join({
             folderType: [
-               (join: any) =>  join('typeId', 'id', {
+               (join: any) =>  join('folderType.id', 'typeId', {
                     select: Fn.definition({
                         name: 'folderTypeName'
                     }),
@@ -76,7 +76,7 @@ describe('join语句测试', () => {
                         field: 'name'
                     }
                }),
-               (join: any) =>  join('parentTypeId', 'id', {
+               (join: any) =>  join('folderType.id', 'parentTypeId', {
                     select: Fn.definition({
                         name: 'folderParentTypeName'
                     }),
@@ -88,7 +88,7 @@ describe('join语句测试', () => {
                 })
             ],
             elementType: [
-                (join: any) =>  join('typeId', 'id', {
+                (join: any) =>  join('elementType.id', 'typeId', {
                     select: Fn.definition({
                         name: 'elementTypeName'
                     }),
@@ -98,7 +98,7 @@ describe('join语句测试', () => {
                         field: 'name'
                     }
                 }),
-                (join: any) =>  join('parentTypeId', 'id', {
+                (join: any) =>  join('elementType.id', 'parentTypeId', {
                     select: Fn.definition({
                         name: 'elementParentTypeName'
                     }),
@@ -113,5 +113,34 @@ describe('join语句测试', () => {
             'module.pathId': '/111'
           }).query()
         expect(renameJoin).to.equal(testSql.renameJoin);
+    })
+    it('join不同表', () => {
+        const getUserRights = Models.userRoleRelation.select({}).join({
+            roleRightRelation: 
+               (join: any) =>  join('roleRightRelation.roleId', 'userRoleRelation.roleId', {
+                    select: Fn.definition({
+                        roleId: 'roleId'
+                    })
+               })
+            ,
+            right: 
+                (join: any) =>  join('right.rightId', 'roleRightRelation.rightId', {
+                    select: Fn.definition({
+                        rightId:'rightId',
+                        rightName: 'rightName',
+                        pagePath: 'pagePath'
+                    })
+                })
+            ,
+            role: 
+                (join: any) =>  join('role.roleId', 'userRoleRelation.roleId', {
+                    select: Fn.definition({
+                        roleName: 'roleName'
+                    })
+                })
+          }).where({
+            'userId': '7c3ae1e0cfa411e8aa3a6918e4f6bbab'
+          }).query()
+        expect(getUserRights).to.equal(testSql.getUserRights);
     })
 })

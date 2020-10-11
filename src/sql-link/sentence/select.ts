@@ -24,8 +24,9 @@ export function select(selector: SelectParams) {
     let arr: any[] = [],
       data = this.data,
       staticData = this.staticData;
+     console.log('dataArr1', selector)
     //无参数即为查询Model全部数据
-    if (_.isEmpty(selector)) {
+    if (selector === undefined || selector === null) {
       let dataArr = Object.keys(data);
       fullNameChange(this, dataArr, this.tableName, arr);
       if (staticData) {
@@ -37,7 +38,6 @@ export function select(selector: SelectParams) {
           arr.push(`'${fullName}' AS ${name}`);
         });
       }
-     
     } else if (selector instanceof Dispatch) {
       let excludeList = selector.reducer();
       let dataArr = Object.keys(data).filter((name) => {
@@ -52,7 +52,18 @@ export function select(selector: SelectParams) {
           arr.push(`'${item.value}' AS ${name}`);
         });
       }
+    } else {
+      // selector 是普通对象
+      let dataArr = Object.keys(selector);
+      if (dataArr.length === 0) {
+        this.sqlSections.select = `SELECT `;
+        this.attrStr = ``
+        return this;
+      } else {  
+        console.log(selector, '是普通对象')
+      }
     }
+    console.log('非空结束')
     this.sqlSections.select = `SELECT ${arr.join(',')}`;
     this.attrStr = `${arr.join(',')}`;
     return this;

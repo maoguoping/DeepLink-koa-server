@@ -7,7 +7,40 @@ import _ = require('lodash');
 export interface JoinParams {
     [propName: string]: any;
 }
+/**
+   *
+   * @param name
+   * @return {*|string}
+   */
+  function getFullName(name: string, spaceName: string){
+    let fullName = '';
+    let nameArr = name.split('.');
+    if (nameArr.length === 1) {
+      let currentModelName = this.tableName;
+      if(spaceName) {
+        fullName = `${spaceName}.${this[name]}`
+      } else if (this._joinField[name]) {
+        fullName = this._joinField[name]
+      } else {
+        fullName = `${currentModelName}.${this[name]}`
+      }
+    } else {
+      let modelName = nameArr[0];
+      let fieldName = nameArr[1];
+      let joinModelName = this.context.Models[modelName].tableName;
+      if (this._joinField[modelName]) {
+        joinModelName = this._joinField[modelName][0]
+      }
+      let contextFieldName = this.context.Models[modelName][fieldName]
+      if(spaceName) {
+        fullName = spaceName + '.' + contextFieldName;
+      } else {
+        fullName = (joinModelName ? joinModelName : this.tableName) + '.' + contextFieldName;
+      }
+    }
 
+    return fullName;
+  }
 export function join(joinObj: JoinParams) {
   let namespaceArr = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i'];
   let namespaceIndex = 0;
@@ -25,11 +58,11 @@ export function join(joinObj: JoinParams) {
       let joinOption = joinObj[name];
       let sameModelArr = !Array.isArray(joinOption) ? [joinOption] : joinOption;
       sameModelArr.forEach(item => {
-        item((s: string, t: string, joinOptions: any) => {
-          let targetField = model[t];
-          let sourceField = this[s];
+        item((t: string, s: string, joinOptions: any) => {
           let spaceName = namespaceArr[namespaceIndex++];
-          let str = ` LEFT JOIN ${model.tableName} ${spaceName} ON ${spaceName}.${targetField}=${this.tableName}.${sourceField}`;
+          let targetField = getFullName.call(this, t, spaceName);
+          let sourceField = getFullName.call(this, s);
+          let str = ` LEFT JOIN ${model.tableName} ${spaceName} ON ${targetField}=${sourceField}`;
           joinArr.push(str);
           //join是否存在分组条件
           if (joinOptions && joinOptions._selectGroup && joinOptions._selectGroup.name) {
@@ -49,7 +82,7 @@ export function join(joinObj: JoinParams) {
               this._joinField, nameObj
             );
             let joinModel = null;
-            joinModel = model.mixin(spaceName, joinOptions.select);
+            joinModel = model.mixin(spaceName, joinOptions ? joinOptions.select : undefined);
             selectArr.push(joinModel.attrStr);
             Object.assign(this._keyWithField, joinModel._keyWithField);
           }
@@ -60,16 +93,23 @@ export function join(joinObj: JoinParams) {
 
   this.sqlSections.join = joinArr.join('');
   // if(selectSql === ''){
-  selectSql += `,`;
+  if (this.attrStr)  {
+    selectSql += `,`;
+  }
   // }
   let _selectGroupArr = Object.keys(this._selectGroup);
   _selectGroupArr.forEach((name) => {
     let group = this._selectGroup[name];
-    let sql = `CASE `;
-    group.forEach((item: any) => {
-      sql += `WHEN ${item.condition} THEN ${item.fullname} `
-    });
-    sql += ` END '${name}'`
+    let sql = ``;
+    if (this._selectGroup.condition) {
+      sql = `CASE `;
+      group.forEach((item: any) => {
+        sql += `WHEN ${item.condition} THEN ${item.fullname} `
+      });
+      sql += ` END '${name}'`
+    } else {
+      sql = ``
+    }
     selectArr.push(sql);
   });
   selectSql += selectArr.join(',');

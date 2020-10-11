@@ -147,13 +147,9 @@ class FnObj {
     let fullName = '';
     let nameArr = name.split('.');
     if (nameArr.length === 1) {
-      let currentModelName = this.currentModel._name;
+      let currentModelName = this.currentModel.tableName;
       //如果值来自于关联表
-      if (this.currentModel._keyWithField[name]) {
-        fullName = this.currentModel._keyWithField[name]
-      } else {
-        fullName = `${currentModelName}.${this.currentModel[name]}`
-      }
+      fullName = `${currentModelName}.${this.currentModel[name]}`
     } else {
       let modelName = nameArr[0];
       let fieldName = nameArr[1];

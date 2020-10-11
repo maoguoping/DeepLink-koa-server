@@ -35,6 +35,11 @@ export const Model = {
             required:true,
             default: () => ''
         },
+        path:{
+            field:'path',
+            required: false,
+            default: () => ''
+        },
         description:{
             field:'description',
             required:false,

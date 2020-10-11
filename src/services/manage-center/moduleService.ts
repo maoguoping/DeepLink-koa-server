@@ -15,8 +15,8 @@ export default class ModuleService {
     let page = new Page(
       Models.module.select().join({
         folderType: [
-          (join: any) => join('typeId', 'id', { select: Fn.exclude(['id'])}),
-          (join: any) => join('parentTypeId', 'id', { select: Fn.exclude(['id'])})
+          (join: any) => join('folderType.typeId', 'id', { select: Fn.exclude(['id'])}),
+          (join: any) => join('folderType.parentTypeId', 'id', { select: Fn.exclude(['id'])})
         ]
       }).where({
         'module.parentPathId': parentPathId
@@ -131,7 +131,7 @@ export default class ModuleService {
   public static async getModuleInfoByPathId(pathId: string) {
     let results = await Models.module.select().join({
       folderType: [
-        (join: any) =>  join('typeId', 'id', {
+        (join: any) =>  join('folderType.id', 'typeId', {
              select: Fn.definition({
                  name: 'folderTypeName'
              }),
@@ -141,7 +141,7 @@ export default class ModuleService {
                  field: 'name'
              }
         }),
-        (join: any) =>  join('parentTypeId', 'id', {
+        (join: any) =>  join('folderType.id', 'parentTypeId', {
              select: Fn.definition({
                  name: 'folderParentTypeName'
              }),
@@ -153,7 +153,7 @@ export default class ModuleService {
          })
      ],
      elementType: [
-         (join: any) =>  join('typeId', 'id', {
+         (join: any) =>  join('elementType.id', 'typeId', {
              select: Fn.definition({
                  name: 'elementTypeName'
              }),
@@ -163,7 +163,7 @@ export default class ModuleService {
                  field: 'name'
              }
          }),
-         (join: any) =>  join('parentTypeId', 'id', {
+         (join: any) =>  join('elementType.id', 'parentTypeId', {
              select: Fn.definition({
                  name: 'elementParentTypeName'
              }),

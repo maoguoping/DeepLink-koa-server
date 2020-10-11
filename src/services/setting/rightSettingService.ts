@@ -49,7 +49,7 @@ export default class RightSettingService {
         let { rightId } = searchData;
         //let createTimeArr = (createTime === '') ? [] : createTime.split(',');
         let results = await Models.roleRightRelation.select().join({
-            role: (join: any) => join('roleId', 'roleId', {
+            role: (join: any) => join('role.roleId', 'roleId', {
                 select: Fn.definition({
                     roleName: 'roleName'
                 })

@@ -36,7 +36,7 @@ passport.use(new JwtStrategy(opts, async (jwt_payload, done) => {
   let userInfo = null;
   try {
     let serviceRes: any = await UserService.getUserListByUserName(jwt_payload.username);
-    if (serviceRes.length > 0) {
+    if (serviceRes && serviceRes.length > 0) {
       user = serviceRes[0];
       userInfo = userFilter(user)
       if (user.username === jwt_payload.username && user.password === jwt_payload.password) {

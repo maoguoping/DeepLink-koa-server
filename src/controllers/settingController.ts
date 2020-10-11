@@ -99,7 +99,7 @@ export class SettingController {
     @UseBefore(passport.authenticate('jwt', {session: false}))
     async getRoleByRight(@Body() body: any) {
         try {
-            let searchData: any = JSON.parse(body.searchData);
+            let searchData: any = body;
             let res = await RightSettingService.getRoleByRight(searchData);
             return res;
         } catch (err) {
@@ -150,7 +150,7 @@ export class SettingController {
             let rightInfo: any = JSON.parse(body.rightInfo);
             let type: string = body.type;
             let res = await RightSettingService.checkRightExist(rightInfo, type);
-            return res;
+            return { list: res};
         } catch (err) {
             return err;
         }
@@ -160,7 +160,7 @@ export class SettingController {
     @UseBefore(passport.authenticate('jwt', {session: false}))
     async changeRoleRight(@Body() body: any) {
         try {
-            let changeInfo: any = JSON.parse(body.changeInfo);
+            let changeInfo: any = body;
             let res = await RightSettingService.changeRoleRight(changeInfo);
             return res;
         } catch (err) {

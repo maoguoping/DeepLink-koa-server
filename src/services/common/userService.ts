@@ -104,15 +104,17 @@ export default class UserService {
             let results = await Models.userRoleRelation.select(
                 Fn.exclude(['userId','roleId'])
             ).join({
-                user: (join: any) => join('userId', 'userId'),
-                role: (join: any) => join('roleId', 'roleId')
+                user: (join: any) => join('user.userId', 'userId'),
+                role: (join: any) => join('role.roleId', 'roleId')
             }).where({
             'user.username': username
             }).query()
+            console.log(results)
             let ret: User.User[] = [];
             if (results.length > 0) {
                 ret = results
             }
+            return ret;
         } catch (e) {
             console.log(e);
             throw new Error(e);
@@ -126,8 +128,8 @@ export default class UserService {
         let results = await Models.userRoleRelation.select(
             Fn.exclude(['userId','roleId'])
         ).join({
-            user: (join: any) => join('userId', 'userId'),
-            role: (join: any) => join('roleId', 'roleId')
+            user: (join: any) => join('user.userId', 'userId'),
+            role: (join: any) => join('role.roleId', 'roleId')
         }).where({
             'user.userId': userId
         }).query()
@@ -212,4 +214,43 @@ export default class UserService {
         let {username,userId,userTickName,status,roleId,roleName,createTime,lastLoginTime,loginCount,headSculpture} = user;
         return {username,userId,userTickName,status,roleId,roleName,createTime,lastLoginTime,loginCount,headSculpture};
     }
+
+    /**
+     * 获取用户路由权限
+     */
+    public static async getPageAcceessList(userId: string): Promise<any[]> {
+        try {
+            let results: any = Models.userRoleRelation.select({}).join({
+                roleRightRelation: 
+                   (join: any) =>  join('roleRightRelation.roleId', 'userRoleRelation.roleId', {
+                        select: Fn.definition({
+                            roleId: 'roleId'
+                        })
+                   })
+                ,
+                right: 
+                    (join: any) =>  join('right.rightId', 'roleRightRelation.rightId', {
+                        select: Fn.definition({
+                            rightId:'rightId',
+                            rightName: 'rightName',
+                            path: 'path'
+                        })
+                    })
+                ,
+                role: 
+                    (join: any) =>  join('role.roleId', 'userRoleRelation.roleId', {
+                        select: Fn.definition({
+                            roleName: 'roleName'
+                        })
+                    })
+              }).where({
+                'userId': userId
+              }).query()
+            return results
+        } catch (err) {
+            console.log(err)
+            throw new Error(err)
+        }
+    }
+
 }
