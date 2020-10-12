@@ -46,7 +46,7 @@ export class AliOss {
         let opt = {
             region: 'oss-cn-huhehaote',
             accessKeyId: config.aliYunRam.accessKeyId,
-            secretAccessKey: config.aliYunRam.secretAccessKey
+            accessKeySecret: config.aliYunRam.secretAccessKey
         };
         opt = Object.assign(opt, OssInfo);
         this.ossClient = new OSS(opt);
