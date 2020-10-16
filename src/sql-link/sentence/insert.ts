@@ -28,6 +28,7 @@ export function insert(insertObj: InsertParams) {
             });
             valueArr.push(`(${innerArr.join(',')})`);
         });
+        this.sqlSections.insert =`INSERT INTO ${this.tableName}(${fieldArr.join(',')}) VALUES${valueArr.join(',')}`;
     }else {
         dataArr.length > 0 && dataArr.forEach(name => {
             let item = insertObj[name];
@@ -47,8 +48,7 @@ export function insert(insertObj: InsertParams) {
             }
             valueArr.push(value);
         });
-        
+        this.sqlSections.insert =`INSERT INTO ${this.tableName}(${fieldArr.join(',')}) VALUES(${valueArr.join(',')})`;
     }
-    this.sqlSections.insert =`INSERT INTO ${this.tableName}(${fieldArr.join(',')}) VALUES${valueArr.join(',')}`;
     return this;
 };

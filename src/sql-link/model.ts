@@ -10,6 +10,7 @@ import { where, WhereParams } from './sentence/where';
 import { insert, InsertParams } from './sentence/insert';
 import { update, UpdateParams } from './sentence/update';
 import { mixin } from './mixin'
+import { ACTION_TYPE_LIST } from './constant'
 
 export class Model {
   public context: any;
@@ -49,9 +50,9 @@ export class Model {
     this.actionType = '';
     this._FnObj = FnObj;
     this.attrStr = '';
-    this._joinField = {};
-    this._keyWithField = {};
-    this._selectGroup = {};
+    this._joinField = Object.create(null);
+    this._keyWithField = Object.create(null);
+    this._selectGroup = Object.create(null);
     this._name = name;
     this.tableName = value.tableName;
     this.data = value.data;
@@ -89,7 +90,7 @@ export class Model {
   update(updateObj: UpdateParams): Model {
     //标注类型
     this.clearSqlSections();
-    this.actionType = 'update';
+    this.setActionType('update');
     return update.call(this, updateObj);
   }
 
@@ -101,7 +102,7 @@ export class Model {
   insert(insertObj: InsertParams): Model {
     //标注类型
     this.clearSqlSections();
-    this.actionType = 'insert';
+    this.setActionType('insert');
     return insert.call(this, insertObj);
   }
 
@@ -112,7 +113,7 @@ export class Model {
   delete(): Model {
     //标注类型
     this.clearSqlSections();
-    this.actionType = 'delete';
+    this.setActionType('delete');
     this.sqlSections.delete = `DELETE FROM ${this.tableName}`;
     return this;
   }
@@ -152,11 +153,8 @@ export class Model {
   }
   /**
    * SQL清空
-   * @param spaceName {String} 查询配置
-   * @param selector {String} 查询配置
-   * @return {AudioNode | void}
    */
-  clearSqlSections() {
+  clearSqlSections(): void {
     this.sqlSections = {
       insert: '',
       delete: '',
@@ -165,5 +163,15 @@ export class Model {
       where: '',
       join: '',
     };
+  }
+  /**
+   * 设置当前actionType
+   */
+  setActionType(type: string): void {
+    if (ACTION_TYPE_LIST.includes(type)) {
+      this.actionType = type
+    } else {
+      throw new TypeError(`${type}的可用值为：${ACTION_TYPE_LIST.join(',')}`)
+    }
   }
 }

@@ -128,7 +128,7 @@ describe('join语句测试', () => {
                     select: Fn.definition({
                         rightId:'rightId',
                         rightName: 'rightName',
-                        pagePath: 'pagePath'
+                        path: 'pagePath'
                     })
                 })
             ,

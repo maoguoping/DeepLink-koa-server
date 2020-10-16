@@ -66,6 +66,7 @@ export function join(joinObj: JoinParams) {
           joinArr.push(str);
           //join是否存在分组条件
           if (joinOptions && joinOptions._selectGroup && joinOptions._selectGroup.name) {
+            // console.log('join是否存在分组条件', joinOptions)
             let name = joinOptions._selectGroup.name;
             let _selectGroup = this._selectGroup;
             if (!_selectGroup[name]) {
@@ -76,7 +77,7 @@ export function join(joinObj: JoinParams) {
               fullname: `${spaceName}.${model[joinOptions._selectGroup.field]}`
             });
           } else {
-            let nameObj: any = {};
+            let nameObj: any = Object.create(null);
             nameObj[name] = [spaceName];
             this._joinField = Object.assign(
               this._joinField, nameObj
@@ -98,10 +99,11 @@ export function join(joinObj: JoinParams) {
   }
   // }
   let _selectGroupArr = Object.keys(this._selectGroup);
-  _selectGroupArr.forEach((name) => {
-    let group = this._selectGroup[name];
+  console.log('join是否存在分组条件', this._selectGroup);
+  _selectGroupArr.forEach((name: string) => {
+    let group: any[] = this._selectGroup[name];
     let sql = ``;
-    if (this._selectGroup.condition) {
+    if (group.every(item => item.condition !== undefined)) {
       sql = `CASE `;
       group.forEach((item: any) => {
         sql += `WHEN ${item.condition} THEN ${item.fullname} `

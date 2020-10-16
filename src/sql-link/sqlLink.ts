@@ -41,8 +41,8 @@ export class SqlLink {
      * @param modelPath {Object} 数据库model
      */
     dataBind(modelPath: string) {
-        let models: any = {};
-        let _models: any = {};
+        let models: any = Object.create(null);
+        let _models: any = Object.create(null);
         let modelLists: string[] = this.findModel(modelPath);
         modelLists.forEach((item: string) => {
             let name = path.basename(item, '.ts');
