@@ -16,7 +16,7 @@
     "ali-oss": "^6.10.0",
     "aliyun-sdk": "^1.12.3",
     "chai": "^4.2.0",
-    "class-transformer": "^0.2.3",
+    "class-transformer": "^0.3.1",
     "class-validator": "^0.10.1",
     "jsonwebtoken": "^8.5.1",
     "koa": "^2.13.0",
