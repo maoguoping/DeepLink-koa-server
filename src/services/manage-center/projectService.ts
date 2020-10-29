@@ -118,5 +118,6 @@ export default class ProjectService {
         message: `根据路径id查询项目信息成功`,
         data: result[0]
       };
+      return ret;
     }
 }

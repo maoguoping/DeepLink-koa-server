@@ -12,7 +12,7 @@ export class ModelList {
      * 数据获取
      * @return {Promise<any>}
      */
-    query() {
+    async query() {
         let pool = this.pool;
         let sqlList = this.list.map((_this)=>{
             let _sql ='';
@@ -21,25 +21,37 @@ export class ModelList {
             if(sections.select){
                 _sql += ` FROM ${_this.tableName}`
             }
-            _sql += sections.join || '';
-            _sql += sections.where || '';
+            _sql += sections.join ? `JOIN ${sections.where}` : '';
+            _sql += sections.where ? `WHERE ${sections.where}`: '';
             return _sql;
         });
         let sql = sqlList.join(';');
         console.log(`${Date()} mysql:`);
         console.log(sql);
-        return new Promise((resolve, reject) => {
-            pool.getConnection((err, connection: PoolConnection) => {
-                connection.query(sql, (err, results, fields) => {
-                    if (err) {
-                        reject(err)
-                    } else {
-                        resolve(results);
-                    }
-                    // 释放连接
-                    connection.release();
+        let res = []
+        for(let i = 0; i < sqlList.length; i++) {
+            try {
+                let result = await fn(sqlList[i])
+                res[i] = result
+            } catch (err) {
+                throw new Error(err)
+            }
+        }
+        function fn(sql: string) {
+            return new Promise((resolve, reject) => {
+                pool.getConnection((err, connection: PoolConnection) => {
+                    connection.query(sql, (err, results, fields) => {
+                        if (err) {
+                            reject(err)
+                        } else {
+                            resolve(results);
+                        }
+                        // 释放连接
+                        connection.release();
+                    });
                 });
             });
-        });
+        }
+        return res
     }
 }

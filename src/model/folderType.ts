@@ -11,6 +11,11 @@ export const  Model = {
       required:true,
       default:()=>`''`
     },
+    parentId :{
+      field:'folder_parent_type_id',
+      required:true,
+      default:()=>`''`
+    },
     name :{
       field:'folder_type_name',
       required:true,

@@ -15,8 +15,12 @@ export default class ModuleService {
     let page = new Page(
       Models.module.select().join({
         folderType: [
-          (join: any) => join('folderType.typeId', 'id', { select: Fn.exclude(['id'])}),
-          (join: any) => join('folderType.parentTypeId', 'id', { select: Fn.exclude(['id'])})
+          (join: any) => join('folderType.id', 'id', { select: Fn.exclude(['id'])}),
+          (join: any) => join('folderType.parentId', 'id', { select: Fn.exclude(['id'])})
+        ],
+        elementType: [
+          (join: any) => join('elementType.id', 'id', { select: Fn.exclude(['id'])}),
+          (join: any) => join('elementType.parentId', 'id', { select: Fn.exclude(['id'])})
         ]
       }).where({
         'module.parentPathId': parentPathId
@@ -32,7 +36,15 @@ export default class ModuleService {
         }
       });
     let results = await page.query()
-    let list = results[0];
+    let list = results[0].map((item: any) => {
+      let name = item.moduleName
+      delete item.moduleName
+      return {
+        ...item,
+        name
+      }
+
+    });
     let total = results[1][0].total;
     let ret = {
       success: true,
@@ -55,7 +67,7 @@ export default class ModuleService {
     let {name, description, moduleType, typeId, parentId, parentName, parentPath, parentPathId, parentType, parentTypeId} = moduleInfo;
     let result = await Models.module.insert({
       id,
-      name,
+      moduleName: name,
       description,
       moduleType,
       typeId,
@@ -79,22 +91,26 @@ export default class ModuleService {
 
    */
   public static async updateModule(moduleInfo: any) {
-    let {name, oldName, description, typeId, id} = moduleInfo;
-    let modelList = new ModelList([
-      Models.module.update({name, description, typeId, modifyTime: Fn.now()}).where({
-        'module.id': id
-      }),
-      Models.module.update({
-        path: Fn.replace(Models.module, 'path', oldName, name),
-        parentPath: Fn.replace(Models.module, 'parentPath', oldName, name),
-        parentName: Fn.replace(Models.module, 'parentName', oldName, name)
-      }).where({
-        'module.pathId': Fn.like('pathId', (item: any) => `'%${item}%'`)
-      })
-    ]);
-    await modelList.query()
-    let ret = {success: true, message: `修改模块${name}成功！`};
-    return ret
+    try {
+      let {name, oldName, description, typeId, id} = moduleInfo;
+      let modelList = new ModelList([
+        Models.module.update({moduleName: name, description, typeId, modifyTime: Fn.now()}).where({
+          'module.id': id
+        }),
+        Models.module.update({
+          path: Fn.replace(Models.module, 'path', oldName, name),
+          parentPath: Fn.replace(Models.module, 'parentPath', oldName, name),
+          parentName: Fn.replace(Models.module, 'parentName', oldName, name)
+        }).where({
+          'module.pathId': Fn.like('pathId', (item: any) => `'%${item}%'`)
+        })
+      ]);
+      await modelList.query()
+      let ret = {success: true, message: `修改模块${name}成功！`};
+      return ret
+    } catch (err) {
+      throw new Error(err)
+    }
   }
 
   /**

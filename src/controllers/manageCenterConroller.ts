@@ -29,8 +29,8 @@ export class ApiController {
                 //获取项目列表
                 ret = await ModuleService.getModuleListByParentPathId(pathId, name, order, index, size);
             }
-            page.list = ret.list;
-            page.total = ret.total;
+            page.list = ret.data.list;
+            page.total = ret.data.total;
             resultJson.data = page;
             return resultJson;
         } catch (err) {

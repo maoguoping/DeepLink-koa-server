@@ -17,15 +17,17 @@ export interface PageFun {
 }
 export class Page {
   public model: Model;
+  public context: any;
   public pool: Pool;
   public order: Order;
   public limit: {
     index: number;
     size: number;
   };
-  public sql: string;
+  public _sql: string;
   constructor(model: Model, option: PageOption) {
     this.model = model;
+    this.context = model.context;
     this.pool = model._pool;
     this.order = option.order;
     this.limit = option.limit;
@@ -35,7 +37,7 @@ export class Page {
     if (model.sqlSections.where) {
       whereSections += ` WHERE ${model.sqlSections.where}`
     }
-    this.sql = `SELECT SQL_CALC_FOUND_ROWS ${model.sqlSections.select.slice(6)} FROM ${model.tableName} ${model.sqlSections.join} ${whereSections} ORDER BY ${model._keyWithField[this.order.by]} ${this.order.type} LIMIT ${(index -1)*size},${size};SELECT FOUND_ROWS() as total`
+    this._sql = `SELECT SQL_CALC_FOUND_ROWS ${model.sqlSections.select.slice(6)} FROM ${model.tableName} ${model.sqlSections.join} ${whereSections} ORDER BY ${model._keyWithField[this.order.by]} ${this.order.type} LIMIT ${(index -1)*size},${size};SELECT FOUND_ROWS() as total`
   }
   /**
    * 数据获取
@@ -43,22 +45,26 @@ export class Page {
    */
   query() {
     let pool = this.pool;
-    let sql = this.sql;
+    let sql = this._sql;
     console.log(`${Date()} mysql:`);
     console.log(sql);
-    return new Promise((resolve, reject) => {
-      pool.getConnection((err, connection) => {
-        console.log(err);
-        connection.query(sql, (err, results, fields) => {
-          if (err) {
-            reject(err)
-          } else {
-            resolve(results);
-          }
-          // 释放连接
-          connection.release();
+    if(this.context.isTest) {
+      return sql;
+    } else {
+      return new Promise((resolve, reject) => {
+        pool.getConnection((err, connection) => {
+          console.log(err);
+          connection.query(sql, (err, results, fields) => {
+            if (err) {
+              reject(err)
+            } else {
+              resolve(results);
+            }
+            // 释放连接
+            connection.release();
+          });
         });
       });
-    });
+    }
   }
 }

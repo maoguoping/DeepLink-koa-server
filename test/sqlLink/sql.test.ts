@@ -13,10 +13,10 @@ const {
 } = require('chai');
 const sqlLink: SqlLink = new SqlLink({
     dbConfig: config.mysql,
-    modelPath: path.join(__dirname, '../../', 'src','model'),
+    modelPath: path.join(__dirname, '../../', 'src', 'model'),
     test: true
 });
-const { Fn, Models } = sqlLink
+const { Fn, Models, Page } = sqlLink
 const { user } = Models;
 describe('基本sql语句测试', () => {
     it('获取用户', () => {
@@ -51,6 +51,67 @@ describe('基本sql语句测试', () => {
         }).query()
         expect(userDeleteSql).to.equal(testSql.deleteUser);
     })
+})
+describe('select语句测试', () => {
+    it('select静态字段外加分页数据', () => {
+        let staticPageSelect = new Page(Models.project.select(),{
+            order:{
+                by:'modifyTime',
+                type:'DESC'
+            },
+            limit:{
+                size: 5,
+                index: 1
+            }
+        }).query();
+        expect(staticPageSelect).to.equal(testSql.staticPageSelect);
+    })
+    it('多表混合查询', () => {
+        let tableMixSelect = new Page(Models.module.select().join({
+            folderType: [
+              (join: any) => join('folderType.id', 'id', { select: Fn.exclude(['id'])}),
+              (join: any) => join('folderType.parentId', 'id', { select: Fn.exclude(['id'])})
+            ],
+            elementType: [
+              (join: any) => join('elementType.id', 'id', { select: Fn.exclude(['id'])}),
+              (join: any) => join('elementType.parentId', 'id', { select: Fn.exclude(['id'])})
+            ]
+          }).where({
+            'module.parentPathId': '/0bc367f0ff6711e889c6bbbdf87fbcd6'
+          }),
+          {
+            order: {
+              by: 'modifyTime',
+              type: 'DESC'
+            },
+            limit: {
+              size: 5,
+              index: 1
+            }
+          }).query();
+        expect(tableMixSelect).to.equal(testSql.tableMixSelect);
+    })
+})
+describe('update语句测试', () => {
+    it('update模块', () => {
+        let info = { "parentId": "5fdedfd0199711eba09b5d45e80c714e", "parentPath": "/测试项目/测项文件夹", "parentPathId": "/92fb3510198a11ebad5a0d78c6db1ce4/5fdedfd0199711eba09b5d45e80c714e", "parentTypeId": 1, "id": "8b49e37019c111eb9234db7047043503", "name": "测试文件夹2", "oldName": "", "description": "12313121", "typeId": 2, "moduleType": "0" }
+        let updateModule = Models.module.update({ moduleName: info.name, description:info.description, typeId: info.typeId, modifyTime: Fn.now() }).where({
+            'module.id': '8b49e37019c111eb9234db7047043503'
+        }).query()
+        expect(updateModule).to.equal(testSql.updateModule);
+    })
+    it('update模块后repalce', () => {
+        let info = { "parentId": "5fdedfd0199711eba09b5d45e80c714e", "parentPath": "/测试项目/测项文件夹", "parentPathId": "/92fb3510198a11ebad5a0d78c6db1ce4/5fdedfd0199711eba09b5d45e80c714e", "parentTypeId": 1, "id": "8b49e37019c111eb9234db7047043503", "name": "测试文件夹2", "oldName": "", "description": "12313121", "typeId": 2, "moduleType": "0" }
+        let updateModuleReplace = Models.module.update({
+            path: Fn.replace(Models.module, 'path', info.oldName, info.name),
+            parentPath: Fn.replace(Models.module, 'parentPath', info.oldName, info.name),
+            parentName: Fn.replace(Models.module, 'parentName', info.oldName, info.name)
+        }).where({
+            'module.pathId': Fn.like('pathId', (item: any) => `'%${item}%'`)
+        }).query()
+        expect(updateModuleReplace).to.equal(testSql.updateModuleReplace);
+    })
+    
 })
 describe('where语句测试', () => {
     it('where指定Model名称', () => {

@@ -25,6 +25,7 @@ export class SqlLink {
         this.isTest = option.test;
         this.Fn = Fn;
         this.Page = Page;
+        this.ModelList = ModelList
         this.dataBind(option.modelPath);
     }
 

@@ -25,7 +25,7 @@ export const  Model = {
       required:true,
       default:()=>`''`
     },
-    name :{
+    moduleName :{
       field:'module_name',
       required:true,
       default:()=>`''`

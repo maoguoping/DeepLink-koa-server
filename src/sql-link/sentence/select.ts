@@ -5,6 +5,7 @@
  */
 import _ = require('lodash');
 import { Model } from '../model'
+import { dealMysqlKeyword } from '../utils'
 import { Dispatch, DispatchType } from '../dispatch'
 export interface SelectParams {
     [propName: string]: any;
@@ -12,9 +13,10 @@ export interface SelectParams {
 // select 名称变换
 function fullNameChange (that: Model, dataArr: any[], tableName: string, arr: any[]) {
   dataArr.length > 0 && dataArr.forEach((name: string) => {
+    let nameStr = dealMysqlKeyword(name)
     let fullName = `${tableName}.${that[name]}`;
     that._keyWithField[name] = fullName;
-    arr.push(`${fullName} AS ${name}`);
+    arr.push(`${fullName} AS ${nameStr}`);
   });
 }
 export function select(selector: SelectParams) {
@@ -33,9 +35,11 @@ export function select(selector: SelectParams) {
         let staticDataArr = Object.keys(staticData);
         staticDataArr.length > 0 && staticDataArr.forEach(name => {
           let item = staticData[name];
-          let fullName = `${this.tableName}.${item.value}`;
-          this._keyWithField[name] = name;
-          arr.push(`'${fullName}' AS ${name}`);
+          if (typeof item.value === 'string') {
+            arr.push(`'${item.value}' AS ${name}`);
+          } else if (typeof item.value === 'number') {
+            arr.push(`${item.value} AS ${name}`);
+          }
         });
       }
     } else if (selector instanceof Dispatch) {
@@ -48,8 +52,11 @@ export function select(selector: SelectParams) {
         let staticDataArr = Object.keys(staticData);
         staticDataArr.length > 0 && staticDataArr.forEach(name => {
           let item = staticData[name];
-          this._keyWithField[name] = name;
-          arr.push(`'${item.value}' AS ${name}`);
+          if (typeof item.value === 'string') {
+            arr.push(`'${item.value}' AS ${name}`);
+          } else if (typeof item.value === 'number') {
+            arr.push(`${item.value} AS ${name}`);
+          }
         });
       }
     } else {
