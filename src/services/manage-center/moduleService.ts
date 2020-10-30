@@ -102,7 +102,7 @@ export default class ModuleService {
           parentPath: Fn.replace(Models.module, 'parentPath', oldName, name),
           parentName: Fn.replace(Models.module, 'parentName', oldName, name)
         }).where({
-          'module.pathId': Fn.like('pathId', (item: any) => `'%${item}%'`)
+          'module.pathId': Fn.like('pathId', (item: any) => `'%${id}%'`)
         })
       ]);
       await modelList.query()

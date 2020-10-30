@@ -107,7 +107,7 @@ describe('update语句测试', () => {
             parentPath: Fn.replace(Models.module, 'parentPath', info.oldName, info.name),
             parentName: Fn.replace(Models.module, 'parentName', info.oldName, info.name)
         }).where({
-            'module.pathId': Fn.like('pathId', (item: any) => `'%${item}%'`)
+            'module.pathId': Fn.like('pathId', (item: any) => `'%${info.id}%'`)
         }).query()
         expect(updateModuleReplace).to.equal(testSql.updateModuleReplace);
     })

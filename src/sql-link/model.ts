@@ -77,9 +77,9 @@ export class Model {
    */
   select(selector: string | undefined | SelectorDispatch | any[]): Model {
     //标注类型
-    this.clearSqlSections();
-    this.actionType = 'select';
-    return select.call(this, selector);
+    let model = this.initModel()
+    model.actionType = 'select';
+    return select.call(model, selector);
   }
 
   /**
@@ -89,9 +89,9 @@ export class Model {
    */
   update(updateObj: UpdateParams): Model {
     //标注类型
-    this.clearSqlSections();
-    this.setActionType('update');
-    return update.call(this, updateObj);
+    let model = this.initModel()
+    model.actionType = 'update';
+    return update.call(model, updateObj);
   }
 
   /**
@@ -101,9 +101,9 @@ export class Model {
    */
   insert(insertObj: InsertParams): Model {
     //标注类型
-    this.clearSqlSections();
-    this.setActionType('insert');
-    return insert.call(this, insertObj);
+    let model = this.initModel()
+    model.actionType = 'insert';
+    return insert.call(model, insertObj);
   }
 
   /**
@@ -112,10 +112,10 @@ export class Model {
    */
   delete(): Model {
     //标注类型
-    this.clearSqlSections();
-    this.setActionType('delete');
-    this.sqlSections.delete = `DELETE FROM ${this.tableName}`;
-    return this;
+    let model = this.initModel()
+    model.actionType = 'delete';
+    model.sqlSections.delete = `DELETE FROM ${this.tableName}`;
+    return model;
   }
 
   /**
@@ -173,5 +173,9 @@ export class Model {
     } else {
       throw new TypeError(`${type}的可用值为：${ACTION_TYPE_LIST.join(',')}`)
     }
+  }
+  initModel() {
+    let model = new Model(this.context, this._name, this.model)
+    return model
   }
 }
