@@ -3,7 +3,6 @@
  * @param insertObj {Object} 插入配置
  * @return {AudioNode | void}
  */
-import _ = require('lodash');
 export interface JoinParams {
     [propName: string]: any;
 }

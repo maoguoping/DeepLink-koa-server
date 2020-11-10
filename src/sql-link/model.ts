@@ -1,5 +1,4 @@
 import {createConnection, QueryError, RowDataPacket, Pool, PoolOptions} from 'mysql2';
-import _ = require('lodash');
 import {logger} from './log';
 import FnObj from './FnObj';
 import { Dispatch, SelectorDispatch } from './dispatch';
