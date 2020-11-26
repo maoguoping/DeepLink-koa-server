@@ -67,10 +67,11 @@ export default class RightSettingService {
      * 新增权限
      */
     public static async addRight(rightInfo: any) {
-        let {rightName, description} = rightInfo;
+        let {rightName, description, path} = rightInfo;
         let rightId = IdUtils.getUuidV1()
         await Models.right.insert({
             rightId,
+            path,
             parentRightId: rightId,
             rightName,
             createTime: Fn.now(),
@@ -83,8 +84,9 @@ export default class RightSettingService {
      * 更新权限
      */
     public static async updateRight(rightInfo: any) {
-        let {rightName, rightId, description} = rightInfo;
+        let {rightName, rightId, description, path} = rightInfo;
         let res = await Models.right.update({
+            path,
             rightName,
             description
         }).where({
