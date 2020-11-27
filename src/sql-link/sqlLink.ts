@@ -11,7 +11,7 @@ export interface SqlLinkOption {
     modelPath: string;
     test?: Boolean
 }
-export class SqlLink {
+class SqlLink {
     public Fn: any;
     public Models: any;
     public ModelList: any;
@@ -84,4 +84,7 @@ export class SqlLink {
             return []
         }
     }
+}
+export const createLink: (option: SqlLinkOption) => SqlLink = (option: SqlLinkOption) => {
+    return new SqlLink(option)
 }

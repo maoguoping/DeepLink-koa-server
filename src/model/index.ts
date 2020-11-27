@@ -1,7 +1,7 @@
 import config from '../../config';
-import { SqlLink } from '../sql-link/sqlLink';
+import { createLink } from '../sql-link/sqlLink';
 import path = require('path')
-const sqlLink: SqlLink = new SqlLink({
+const sqlLink = createLink({
   dbConfig: config.mysql,
   modelPath: __dirname
 });

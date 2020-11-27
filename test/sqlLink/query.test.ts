@@ -1,4 +1,4 @@
-import { SqlLink } from '../../src/sql-link/sqlLink';
+import { createLink } from '../../src/sql-link/sqlLink';
 import config from '../../config';
 import path = require('path');
 import testSql from '../testSql';
@@ -11,7 +11,7 @@ const {
 const {
     expect
 } = require('chai');
-const sqlLink: SqlLink = new SqlLink({
+const sqlLink = createLink({
     dbConfig: config.mysql,
     modelPath: path.join(__dirname, '../../', 'src','model'),
     test: false
