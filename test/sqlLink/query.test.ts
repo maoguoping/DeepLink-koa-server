@@ -1,4 +1,4 @@
-import { createLink } from '../../src/sql-link/sqlLink';
+import { createLink } from '../../src/sql-link';
 import config from '../../config';
 import path = require('path');
 import testSql from '../testSql';

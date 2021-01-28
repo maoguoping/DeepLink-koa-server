@@ -1,8 +1,9 @@
 import sqlLink from '../../model';
+import { Fn, Page } from '../../sql-link';
 import IdUtils from '../../utils/idUtil';
 import { AliRam }  from '../../aliyun/aliYun';
 import * as User from '../../model/user'
-const { Models, Fn, Page } = sqlLink;
+const { Models } = sqlLink;
 export default class UserService {
     /**
      * 登录
@@ -101,7 +102,7 @@ export default class UserService {
      */
     public static async getUserListByUserName(username: string) {
         try {
-            let results = await Models.userRoleRelation.select(
+            let results: any = await Models.userRoleRelation.select(
                 Fn.exclude(['userId','roleId'])
             ).join({
                 user: (join: any) => join('user.userId', 'userId'),
@@ -125,7 +126,7 @@ export default class UserService {
      * 通过用户名获取用户列表
      */
     public static async getUserListByUserId(userId: string) {
-        let results = await Models.userRoleRelation.select(
+        let results: any = await Models.userRoleRelation.select(
             Fn.exclude(['userId','roleId'])
         ).join({
             user: (join: any) => join('user.userId', 'userId'),
@@ -164,7 +165,7 @@ export default class UserService {
      * @return {Promise<any>}
      */
     public static async getRoleDic() {
-        let results = await Models.role.select().query()
+        let results: any = await Models.role.select().query()
         results = results.map((item: any) => {
             return {
                 id: item.roleId,

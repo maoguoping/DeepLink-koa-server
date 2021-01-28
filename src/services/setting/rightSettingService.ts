@@ -2,8 +2,9 @@
 import UserService from '../common/userService';
 import IdUtils from '../../utils/idUtil';
 import sqlLink from '../../model';
+import { Fn, Page } from '../../sql-link'
 import { IGetRightListParams } from '../../typings/service'
-const { Models, Fn, Page } = sqlLink;
+const { Models } = sqlLink;
 export default class RightSettingService {
     // 构造
     constructor() {
@@ -48,7 +49,7 @@ export default class RightSettingService {
         //数据库查找用户
         let { rightId } = searchData;
         //let createTimeArr = (createTime === '') ? [] : createTime.split(',');
-        let results = await Models.roleRightRelation.select().join({
+        let results: any = await Models.roleRightRelation.select().join({
             role: (join: any) => join('role.roleId', 'roleId', {
                 select: Fn.definition({
                     roleName: 'roleName'

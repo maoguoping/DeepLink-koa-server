@@ -1,5 +1,5 @@
 import sqlLink from '../../model';
-const { Models, Fn, Page } = sqlLink;
+const { Models } = sqlLink;
 export default class ElementService {
     // 构造
     constructor() {

@@ -1,8 +1,9 @@
 import UserService from '../common/userService';
 import sqlLink from '../../model';
+import { Fn, Model, Page } from '../../sql-link'
 import { IGetUserListParams } from '../../typings/service'
 
-const { Models, Fn, Page } = sqlLink;
+const { Models } = sqlLink;
 export default class UserSettingService {
     /**
      * 获取用户列表
@@ -21,12 +22,12 @@ export default class UserSettingService {
                 select: Fn.exclude(['roleId'])
             })
         }).where({
-            'user.username': Fn.equalEmptyAll(username, Fn.like(username, () => `'%${username}%'`)),
-            'user.userId': Fn.equalEmptyAll(userId, Fn.like(userId, () => `'%${userId}%'`)),
-            'user.userTickName': Fn.equalEmptyAll(userTickName, Fn.like(userTickName, () => `'%${userTickName}%'`)),
-            'user.roleId': Fn.equalEmptyAll(roleIdArr),
-            'user.createTime': Fn.equalEmptyAll(createTimeArr, Fn.between(createTimeArr)),
-            'user.lastLoginTime': Fn.equalEmptyAll(lastLoginTimeArr, Fn.between(lastLoginTimeArr))
+            'user.username': Fn.equalEmptyAll(username, Models.user, Fn.like(username, () => `'%${username}%'`)),
+            'user.userId': Fn.equalEmptyAll(userId, Models.user, Fn.like(userId, () => `'%${userId}%'`)),
+            'user.userTickName': Fn.equalEmptyAll(userTickName, Models.user, Fn.like(userTickName, () => `'%${userTickName}%'`)),
+            'user.roleId': Fn.equalEmptyAll(roleIdArr, Models.user),
+            'user.createTime': Fn.equalEmptyAll(createTimeArr, Models.user,Fn.between(createTimeArr)),
+            'user.lastLoginTime': Fn.equalEmptyAll(lastLoginTimeArr, Models.user, Fn.between(lastLoginTimeArr))
         }), {
             order: {
                 by: orderName,
@@ -37,7 +38,7 @@ export default class UserSettingService {
                 index
             }
         });
-        let results = await page.query()
+        let results: any = await page.query()
         console.log(results)
         let userList = results[0];
         let total = results[1][0].total;

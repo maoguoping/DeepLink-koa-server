@@ -1,8 +1,8 @@
 /*项目服务模块*/
 import IdUtils from '../../utils/idUtil';
 import sqlLink from '../../model';
-
-const { Models, ModelList, Fn, Page } = sqlLink;
+import { ModelList, Fn, Page } from '../../sql-link';
+const { Models } = sqlLink;
 export default class ProjectService {
     // 构造
     constructor() {
@@ -75,7 +75,7 @@ export default class ProjectService {
           index
         }
       });
-      let results = await page.query()
+      let results: any = await page.query()
       let list = results[0];
       let total = results[1][0].total;
       let ret = {

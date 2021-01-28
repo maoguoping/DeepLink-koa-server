@@ -2,8 +2,9 @@
 import UserService from '../common/userService';
 import IdUtils from '../../utils/idUtil';
 import sqlLink from '../../model';
+import { Fn, Page } from '../../sql-link'
 import { IGetRoleListParams } from '../../typings/service'
-const { Models, Fn, Page } = sqlLink;
+const { Models } = sqlLink;
 
 export default class RoleSettingService {
     // 构造
@@ -29,7 +30,7 @@ export default class RoleSettingService {
                 index
             }
         });
-        let results = await page.query()
+        let results: any = await page.query()
         let list = results[0];
         let total = results[1][0].total;
         let ret = {

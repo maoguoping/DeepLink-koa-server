@@ -121,7 +121,7 @@ export const Fn = {
     })
   },
   //传入空查询不做为查询条件
-  equalEmptyAll: (value: any, model: Model, fn: any) => {
+  equalEmptyAll: (value: any, model: Model, fn?: any) => {
     let emptyRes: DispatchProps = {
       name:'equalEmptyAll',
       param: {value, model, fn}

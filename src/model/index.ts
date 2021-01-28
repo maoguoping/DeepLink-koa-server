@@ -1,5 +1,5 @@
 import config from '../../config';
-import { createLink } from '../sql-link/sqlLink';
+import { createLink } from '../sql-link';
 import path = require('path')
 const sqlLink = createLink({
   dbConfig: config.mysql,

@@ -11,7 +11,6 @@ export type PageOption = {
     size: number;
   }
 }
-
 export interface PageFun {
   (model: Model, option: PageOption): Page
 }

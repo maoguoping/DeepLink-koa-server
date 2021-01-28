@@ -1,9 +1,10 @@
 import config from '../../../config'
 import sqlLink from '../../model';
+import { Fn, Page } from '../../sql-link'
 import {AliOss,getCallbackInfo} from '../../aliyun/aliYun';
 import crypto  = require('crypto');
 import md5 = require('md5');
-const { Models, Fn, Page } = sqlLink;
+const { Models } = sqlLink;
 export default class OssService {
     // 构造
     constructor() {

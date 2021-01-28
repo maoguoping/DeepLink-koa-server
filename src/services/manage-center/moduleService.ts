@@ -1,7 +1,8 @@
 /*项目服务模块*/
 import IdUtils from '../../utils/idUtil';
 import sqlLink from '../../model';
-const { Models, ModelList, Fn, Page } = sqlLink;
+import { ModelList, Fn, Page } from '../../sql-link'
+const { Models } = sqlLink;
 
 export default class ModuleService {
   // 构造
@@ -35,7 +36,7 @@ export default class ModuleService {
           index
         }
       });
-    let results = await page.query()
+    let results: any = await page.query()
     let list = results[0].map((item: any) => {
       let name = item.moduleName
       delete item.moduleName
@@ -145,7 +146,7 @@ export default class ModuleService {
    * @return {Promise<any>}
    */
   public static async getModuleInfoByPathId(pathId: string) {
-    let results = await Models.module.select().join({
+    let results: any = await Models.module.select().join({
       folderType: [
         (join: any) =>  join('folderType.id', 'typeId', {
              select: Fn.definition({

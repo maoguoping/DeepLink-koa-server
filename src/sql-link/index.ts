@@ -3,9 +3,10 @@ import fs = require('fs');
 import path = require('path');
 import { Pool, PoolOptions} from 'mysql2';
 import { Model } from './model';
-import { ModelList } from './modelList';
-import { Page } from './page';
-import { Fn } from './fn';
+export { Model } from './model';
+export { ModelList } from './modelList';
+export { Page } from './page';
+export { Fn } from './fn';
 export interface SqlLinkOption {
     dbConfig: PoolOptions;
     modelPath: string;
@@ -23,9 +24,6 @@ class SqlLink {
     public constructor(option: SqlLinkOption) {
         this.poolInit(option.dbConfig);
         this.isTest = option.test;
-        this.Fn = Fn;
-        this.Page = Page;
-        this.ModelList = ModelList
         this.dataBind(option.modelPath);
     }
 
