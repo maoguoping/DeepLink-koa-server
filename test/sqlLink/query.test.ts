@@ -1,4 +1,4 @@
-import { createLink } from '../../src/sql-link';
+import { createLink, Fn } from '../../src/sql-link';
 import config from '../../config';
 import path = require('path');
 import testSql from '../testSql';
@@ -16,7 +16,7 @@ const sqlLink = createLink({
     modelPath: path.join(__dirname, '../../', 'src','model'),
     test: false
 });
-const { Fn, Models } = sqlLink
+const { Models } = sqlLink
 const { user } = Models;
 describe('异步查询sql语句测试', () => {
     it('获取用户', (done: any) => {

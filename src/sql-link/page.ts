@@ -1,5 +1,6 @@
 import {createConnection, QueryError, RowDataPacket, Pool, PoolOptions} from 'mysql2';
 import { Model } from './model';
+import { SqlLink } from './index'
 type Order = {
   type: string;
   by: string;
@@ -16,7 +17,7 @@ export interface PageFun {
 }
 export class Page {
   public model: Model;
-  public context: any;
+  public context: SqlLink;
   public pool: Pool;
   public order: Order;
   public limit: {
@@ -42,28 +43,35 @@ export class Page {
    * 数据获取
    * @return {Promise<any>}
    */
-  query() {
+  query(): Promise<any>{
     let pool = this.pool;
     let sql = this._sql;
     console.log(`${Date()} mysql:`);
     console.log(sql);
-    if(this.context.isTest) {
-      return sql;
-    } else {
-      return new Promise((resolve, reject) => {
-        pool.getConnection((err, connection) => {
-          console.log(err);
-          connection.query(sql, (err, results, fields) => {
-            if (err) {
-              reject(err)
-            } else {
-              resolve(results);
-            }
-            // 释放连接
-            connection.release();
-          });
+    return new Promise((resolve, reject) => {
+      pool.getConnection((err, connection) => {
+        console.log(err);
+        connection.query(sql, (err, results, fields) => {
+          if (err) {
+            reject(err)
+          } else {
+            resolve(results);
+          }
+          // 释放连接
+          connection.release();
         });
       });
-    }
+    });
+  }
+  /**
+   * 数据获取
+   * @return {Promise<any>}
+   */
+  queryTest(): string {
+    let pool = this.pool;
+    let sql = this._sql;
+    console.log(`${Date()} mysql:`);
+    console.log(sql);
+    return sql;
   }
 }

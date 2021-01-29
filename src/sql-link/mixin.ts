@@ -1,7 +1,8 @@
 import { Dispatch, SelectorDispatch } from './dispatch'
-export function mixin(spaceName: string, selector: string | undefined | SelectorDispatch | any[]) {
-  let _keyWithField = this._keyWithField;
-  let _this = this;
+import { Model } from './model';
+export function mixin(m: Model, spaceName: string, selector: string | undefined | SelectorDispatch | any[]) {
+  let _keyWithField: Record<string, string> = m._keyWithField;
+  let _this = m;
   function handleStaticData (staticData: any): string[] {
     let staticDataArr = Object.keys(staticData);
     let arr:string [] = []
@@ -24,8 +25,8 @@ export function mixin(spaceName: string, selector: string | undefined | Selector
   }
   if (selector == '' || selector == undefined) {
     let arr: string[] = [];
-    let data = this.data;
-    let staticData = this.staticData;
+    let data = m.data;
+    let staticData = m.staticData;
     let dataArr = Object.keys(data);
     if (dataArr.length > 0) {
       arr = arr.concat(handleDataArr(data, dataArr))
@@ -33,12 +34,12 @@ export function mixin(spaceName: string, selector: string | undefined | Selector
     if (staticData) {
       arr = arr.concat(handleStaticData(staticData))
     }
-    this.sqlSections.select = `SELECT ${arr.join(',')}`;
-    this.attrStr = `${arr.join(',')}`;
+    m.sqlSections.select = `SELECT ${arr.join(',')}`;
+    m.attrStr = `${arr.join(',')}`;
   } else if (selector instanceof Dispatch) {
     let arr: string[] = [];
-    let data = this.data;
-    let staticData = this.staticData;
+    let data = m.data;
+    let staticData = m.staticData;
     let dataArr = [];
     if (selector.name === 'exclude') {
       let excludeList = selector.reducer();
@@ -49,15 +50,15 @@ export function mixin(spaceName: string, selector: string | undefined | Selector
         arr = arr.concat(handleDataArr(data, dataArr))
       }
     } else if (selector.name === 'definition') {
-      let definition = selector.reducer(this.context.Models[this._name], spaceName);
+      let definition = selector.reducer(m.context.Models[m._name], spaceName);
       arr.push(definition);
     }
 
     if (staticData) {
       arr = arr.concat(handleStaticData(staticData))
     }
-    this.sqlSections.select = `SELECT ${arr.join(',')}`;
-    this.attrStr = `${arr.join(',')}`;
+    m.sqlSections.select = `SELECT ${arr.join(',')}`;
+    m.attrStr = `${arr.join(',')}`;
   }
-  return this;
+  return m;
 }

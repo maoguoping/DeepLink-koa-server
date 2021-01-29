@@ -1,5 +1,5 @@
 import { Fn } from './fn'
-import { Model } from './model';
+import { Model, Models } from './model';
 class FnObj {
   public currentModel: Model;
   public currentFn: any;
@@ -10,7 +10,7 @@ class FnObj {
   public srcParam: any;
   public param: any;
   public isFn: boolean;
-  public contextModels: any;
+  public contextModels: Models;
   constructor(currentModel: Model, objName: string, param: any) {
     this.currentModel = currentModel;
     this.objName= objName;

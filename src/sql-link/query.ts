@@ -1,12 +1,13 @@
-import {createConnection, QueryError, RowDataPacket, Pool, PoolOptions, PoolConnection} from 'mysql2';
+import { PoolConnection, Pool } from 'mysql2';
 import { logger } from './log';
-export function query () {
-  let pool = this._pool;
+import { Model } from './model'
+export function query (model: Model): Promise<Model>{
+  let pool: Pool = model._pool;
     let _sql = '';
-    let sections = this.sqlSections;
+    let sections = model.sqlSections;
     _sql += sections.insert || sections.delete || sections.update || sections.select;
     if (sections.select) {
-      _sql += ` FROM ${this.tableName}`
+      _sql += ` FROM ${model.tableName}`
     }
     _sql += sections.join || '';
     if (sections.where) {
@@ -14,26 +15,38 @@ export function query () {
     }
     console.log(_sql);
     logger.info(_sql);
-    if(this.context.isTest) {
-      return _sql;
-    } else {
-      return new Promise((resolve, reject) => {
-        pool.getConnection((err: any, connection: PoolConnection) => {
-          if(err) {
-              console.log(err);
-              reject(err);
-          } else {
-              connection.query(_sql, (err : any, results: any, fields: any) => {
-                  if (err) {
-                      reject(err)
-                  } else {
-                      resolve(results);
-                  }
-                  // 释放连接
-                  connection.release();
-              });
-          }
-        });
+    return new Promise((resolve, reject) => {
+      pool.getConnection((err: any, connection: PoolConnection) => {
+        if(err) {
+            console.log(err);
+            reject(err);
+        } else {
+            connection.query(_sql, (err : any, results: any, fields: any) => {
+                if (err) {
+                    reject(err)
+                } else {
+                    resolve(results);
+                }
+                // 释放连接
+                connection.release();
+            });
+        }
       });
-    } 
+    });
+}
+export function queryTest (model: Model): string{
+  let pool: Pool = model._pool;
+  let _sql = '';
+  let sections = model.sqlSections;
+  _sql += sections.insert || sections.delete || sections.update || sections.select;
+  if (sections.select) {
+    _sql += ` FROM ${model.tableName}`
+  }
+  _sql += sections.join || '';
+  if (sections.where) {
+    _sql += ` WHERE ${sections.where}`
+  }
+  console.log(_sql);
+  logger.info(_sql);
+  return _sql
 }

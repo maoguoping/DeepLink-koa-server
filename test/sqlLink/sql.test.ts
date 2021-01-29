@@ -20,7 +20,7 @@ const { Models } = sqlLink
 const { user } = Models;
 describe('基本sql语句测试', () => {
     it('获取用户', () => {
-        const userFindSql = user.select().query()
+        const userFindSql = user.select().queryTest()
         expect(userFindSql).to.equal(testSql.queryAllUser);
     })
     it('新增用户', () => {
@@ -34,21 +34,21 @@ describe('基本sql语句测试', () => {
             createTime: Fn.now(),
             lastLoginTime: Fn.now(),
             loginCount:0
-        }).query()
+        }).queryTest()
         expect(userAddSql).to.equal(testSql.addUser);
     })
     it('修改用户', () => {
         const userUpdateSql = user.update({
             userId: 'testid1',
             username: '测试用户1更新'
-        }).query()
+        }).queryTest()
         expect(userUpdateSql).to.equal(testSql.updateUser);
     })
     it('删除用户', () => {
         const userDeleteSql = user.delete().where({
             userId: 'testid1',
             username: '测试用户1更新'
-        }).query()
+        }).queryTest()
         expect(userDeleteSql).to.equal(testSql.deleteUser);
     })
 })
@@ -63,7 +63,7 @@ describe('select语句测试', () => {
                 size: 5,
                 index: 1
             }
-        }).query();
+        }).queryTest();
         expect(staticPageSelect).to.equal(testSql.staticPageSelect);
     })
     it('多表混合查询', () => {
@@ -88,7 +88,7 @@ describe('select语句测试', () => {
               size: 5,
               index: 1
             }
-          }).query();
+          }).queryTest();
         expect(tableMixSelect).to.equal(testSql.tableMixSelect);
     })
 })
@@ -97,7 +97,7 @@ describe('update语句测试', () => {
         let info = { "parentId": "5fdedfd0199711eba09b5d45e80c714e", "parentPath": "/测试项目/测项文件夹", "parentPathId": "/92fb3510198a11ebad5a0d78c6db1ce4/5fdedfd0199711eba09b5d45e80c714e", "parentTypeId": 1, "id": "8b49e37019c111eb9234db7047043503", "name": "测试文件夹2", "oldName": "", "description": "12313121", "typeId": 2, "moduleType": "0" }
         let updateModule = Models.module.update({ moduleName: info.name, description:info.description, typeId: info.typeId, modifyTime: Fn.now() }).where({
             'module.id': '8b49e37019c111eb9234db7047043503'
-        }).query()
+        }).queryTest()
         expect(updateModule).to.equal(testSql.updateModule);
     })
     it('update模块后repalce', () => {
@@ -108,7 +108,7 @@ describe('update语句测试', () => {
             parentName: Fn.replace(Models.module, 'parentName', info.oldName, info.name)
         }).where({
             'module.pathId': Fn.like('pathId', (item: any) => `'%${info.id}%'`)
-        }).query()
+        }).queryTest()
         expect(updateModuleReplace).to.equal(testSql.updateModuleReplace);
     })
     
@@ -119,7 +119,7 @@ describe('where语句测试', () => {
             {
                 'user.username': '123', 
             }
-        ).query()
+        ).queryTest()
         expect(whereModelparse).to.equal(testSql.whereModelNameDeclare);
     })
 })
@@ -172,7 +172,7 @@ describe('join语句测试', () => {
             ]
           }).where({
             'module.pathId': '/111'
-          }).query()
+          }).queryTest()
         expect(renameJoin).to.equal(testSql.renameJoin);
     })
     it('join不同表', () => {
@@ -201,7 +201,7 @@ describe('join语句测试', () => {
                 })
           }).where({
             'userId': '7c3ae1e0cfa411e8aa3a6918e4f6bbab'
-          }).query()
+          }).queryTest()
         expect(getUserRights).to.equal(testSql.getUserRights);
     })
 })

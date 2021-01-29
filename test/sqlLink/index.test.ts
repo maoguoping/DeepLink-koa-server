@@ -1,4 +1,4 @@
-import { createLink } from '../../src/sql-link';
+import { createLink, Fn, Page } from '../../src/sql-link';
 import config from '../../config';
 import path = require('path');
 const {
@@ -25,11 +25,9 @@ describe('启动测试', () => {
         expect(user._name).to.equal('user');
     })
     it('获取Page', () => {
-        const Page = sqlLink.Page;
         expect(Page instanceof Function).to.equal(true);
     })
     it('获取Fn', () => {
-        const Fn = sqlLink.Fn;
         expect(Fn.add instanceof Function).to.equal(true);
     })
 })

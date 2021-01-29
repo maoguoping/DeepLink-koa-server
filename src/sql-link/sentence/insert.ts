@@ -3,19 +3,20 @@
  * @param insertObj {Object} 插入配置
  * @return {AudioNode | void}
  */
+import { Model } from '../model';
 import { inputValueFormat } from '../utils'
 export interface InsertParams {
     [propName: string]: any;
 }
-export function insert(insertObj: InsertParams) {
-    let data = this.data;
+export function insert(m: Model, insertObj: InsertParams) {
+    let data = m.data;
     let dataArr = Object.keys(data);
-    let fieldArr: any[] = [];
+    let fieldArr: string[] = [];
     let valueArr: string[] = [];
     if(Array.isArray(insertObj)  && insertObj.length > 0 ){
         // 获取插入对象的真实field
         let nameArr = Object.keys(insertObj[0]);
-        fieldArr = nameArr.map( obj => this[obj]);
+        fieldArr = nameArr.map( obj => m[obj]);
         insertObj.forEach(item => {
             let innerArr: string[] = [];
             nameArr.forEach((name)=>{
@@ -28,18 +29,18 @@ export function insert(insertObj: InsertParams) {
             });
             valueArr.push(`(${innerArr.join(',')})`);
         });
-        this.sqlSections.insert =`INSERT INTO ${this.tableName}(${fieldArr.join(',')}) VALUES${valueArr.join(',')}`;
+        m.sqlSections.insert =`INSERT INTO ${m.tableName}(${fieldArr.join(',')}) VALUES${valueArr.join(',')}`;
     }else {
         dataArr.length > 0 && dataArr.forEach(name => {
             let item = insertObj[name];
-            let field = this[name];
+            let field = m[name];
             fieldArr.push(field);
             let value = null;
             if(item === undefined || item === null){
                 value = data[name].default();
             } else if (typeof item === 'object') {
                 let obj = {
-                    name: this[name],
+                    name: m[name],
                     reducer: item.reducer
                 };
                 value = obj.reducer();
@@ -48,7 +49,7 @@ export function insert(insertObj: InsertParams) {
             }
             valueArr.push(value);
         });
-        this.sqlSections.insert =`INSERT INTO ${this.tableName}(${fieldArr.join(',')}) VALUES(${valueArr.join(',')})`;
+        m.sqlSections.insert =`INSERT INTO ${m.tableName}(${fieldArr.join(',')}) VALUES(${valueArr.join(',')})`;
     }
-    return this;
+    return m;
 };

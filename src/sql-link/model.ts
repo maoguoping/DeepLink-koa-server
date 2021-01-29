@@ -2,19 +2,19 @@ import {createConnection, QueryError, RowDataPacket, Pool, PoolOptions} from 'my
 import {logger} from './log';
 import FnObj from './FnObj';
 import { Dispatch, SelectorDispatch } from './dispatch';
-import { query } from './query';
-import { join, JoinParams } from './sentence/join';
+import { query, queryTest } from './query';
+import { join, SelectGroup, JoinField, KeyWithField } from './sentence/join';
 import { select, SelectParams } from './sentence/select';
 import { where, WhereParams } from './sentence/where';
 import { insert, InsertParams } from './sentence/insert';
 import { update, UpdateParams } from './sentence/update';
 import { mixin } from './mixin'
 import { ACTION_TYPE_LIST } from './constant'
-
+import { SqlLink, SourceModel, ModelData, StaticData } from './index'
 export class Model {
-  public context: any;
+  public context: SqlLink;
   public _pool: Pool;
-  public model: any;
+  public model: SourceModel;
   public sqlSections: {
     insert: string;
     delete: string;
@@ -24,17 +24,17 @@ export class Model {
     join: string;
   }
   public actionType: string;
-  public _FnObj: any;
+  public _FnObj: Function;
   public attrStr: string;
-  public _joinField: any;
-  public _keyWithField: any;
-  public _selectGroup: any;
+  public _joinField: JoinField;
+  public _keyWithField: KeyWithField;
+  public _selectGroup: SelectGroup;
   public _name: string;
   public tableName: string;
-  public data: any;
-  public staticData: any;
+  public data: ModelData;
+  public staticData?: StaticData | undefined;
   [propName: string]: any;
-  constructor(context: any, name: string, value: any) {
+  constructor(context: SqlLink, name: string, value: SourceModel) {
     this.context = context;
     this._pool = context.pool;
     this.model = value;
@@ -62,7 +62,7 @@ export class Model {
       Object.defineProperty(_, key, {
         configurable: false,
         enumerable: true,
-        get: function proxyGetter() {
+        get: function proxyGetter(): string {
           return _.data[key].field;
         }
       })
@@ -74,11 +74,11 @@ export class Model {
    * @param selector {String} 查询配置
    * @return {AudioNode | void}
    */
-  select(selector: string | undefined | SelectorDispatch | any[]): Model {
+  select(selector?: string | undefined | SelectorDispatch | any[] | Record<string, any>): Model {
     //标注类型
     let model = this.initModel()
     model.actionType = 'select';
-    return select.call(model, selector);
+    return select(model, selector);
   }
 
   /**
@@ -90,7 +90,7 @@ export class Model {
     //标注类型
     let model = this.initModel()
     model.actionType = 'update';
-    return update.call(model, updateObj);
+    return update(model, updateObj);
   }
 
   /**
@@ -102,7 +102,7 @@ export class Model {
     //标注类型
     let model = this.initModel()
     model.actionType = 'insert';
-    return insert.call(model, insertObj);
+    return insert(model, insertObj);
   }
 
   /**
@@ -122,7 +122,7 @@ export class Model {
    * @param whereObj {Object}
    */
   where(whereObj: WhereParams): Model {
-    return where.call(this, whereObj);
+    return where(this, whereObj);
   }
 
   /**
@@ -130,17 +130,23 @@ export class Model {
    * @param joinObj {Object}
    */
   join(joinObj: {[propName: string]: any}): Model {
-    return join.call(this, joinObj);
+    return join(this, joinObj);
   }
 
   /**
    * 数据获取
    * @return {Promise<any>}
    */
-  query(): Promise<any> {
-    return query.call(this);
+  query(): Promise<any>{
+    return query(this);
   }
-
+  /**
+   * 数据获取sql测试
+   * @return {string}
+   */
+  queryTest(): string{
+    return queryTest(this);
+  }
   /**
    * SQL连表选择查询
    * @param spaceName {String} 查询配置
@@ -148,7 +154,7 @@ export class Model {
    * @return {AudioNode | void}
    */
   mixin(spaceName: string, selector: string | undefined | SelectorDispatch | any[]) {
-    return mixin.call(this, spaceName, selector)
+    return mixin(this, spaceName, selector)
   }
   /**
    * SQL清空
@@ -173,8 +179,9 @@ export class Model {
       throw new TypeError(`${type}的可用值为：${ACTION_TYPE_LIST.join(',')}`)
     }
   }
-  initModel() {
+  initModel(): Model {
     let model = new Model(this.context, this._name, this.model)
     return model
   }
 }
+export type Models = Record<string, Model>

@@ -1,3 +1,4 @@
+import { Model } from "../model";
 export interface UpdateParams {
     [propName: string]: any;
 }
@@ -6,7 +7,7 @@ export interface UpdateParams {
  * @param updateObj {Object} 查询配置
  * @return {AudioNode | void}
  */
-export function update(updateObj: UpdateParams) {
+export function update(m: Model, updateObj: UpdateParams) {
     let arr: string[] = [];
     let updateObjArr = Object.keys(updateObj);
     updateObjArr.length > 0 &&　updateObjArr.forEach(name => {
@@ -14,15 +15,15 @@ export function update(updateObj: UpdateParams) {
         let value = '';
         if (typeof item === 'object') {
             let obj = {
-                name:this[name],
+                name:m[name],
                 reducer: item.reducer
             };
             value = `${obj.name} = `+ obj.reducer();
         } else {
-            value = `${this[name]} = '${item}'`
+            value = `${m[name]} = '${item}'`
         }
         arr.push(value);
     });
-    this.sqlSections.update =`UPDATE ${this.tableName} SET ${arr.join(',')}`;
-    return this;
+    m.sqlSections.update =`UPDATE ${m.tableName} SET ${arr.join(',')}`;
+    return m;
 };

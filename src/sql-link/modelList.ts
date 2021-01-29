@@ -1,9 +1,9 @@
-import {createConnection, QueryError, RowDataPacket, Pool, PoolOptions, PoolConnection} from 'mysql2';
+import { Pool, PoolConnection} from 'mysql2';
 import { Model } from './model'
 export class ModelList {
     public list: Model[];
     public pool: Pool;
-    constructor(list: any[]) {
+    constructor(list: Model[]) {
        this.list = list;
        this.pool = list[0]._pool;
     }

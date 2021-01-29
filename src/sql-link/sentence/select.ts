@@ -5,12 +5,12 @@
  */
 import { Model } from '../model'
 import { dealMysqlKeyword } from '../utils'
-import { Dispatch, DispatchType } from '../dispatch'
+import { Dispatch, SelectorDispatch } from '../dispatch'
 export interface SelectParams {
     [propName: string]: any;
 }
 // select 名称变换
-function fullNameChange (that: Model, dataArr: any[], tableName: string, arr: any[]) {
+function fullNameChange (that: Model, dataArr: string[], tableName: string, arr: string[]) {
   dataArr.length > 0 && dataArr.forEach((name: string) => {
     let nameStr = dealMysqlKeyword(name)
     let fullName = `${tableName}.${that[name]}`;
@@ -18,18 +18,18 @@ function fullNameChange (that: Model, dataArr: any[], tableName: string, arr: an
     arr.push(`${fullName} AS ${nameStr}`);
   });
 }
-export function select(selector: SelectParams) {
+export function select(m: Model, selector?: string | undefined | SelectorDispatch | any[] | Record<string, any>) {
     //标注类型
-    this.clearSqlSections();
-    this.actionType = 'select';
-    let arr: any[] = [],
-      data = this.data,
-      staticData = this.staticData;
+    m.clearSqlSections();
+    m.actionType = 'select';
+    let arr: string[] = [],
+      data = m.data,
+      staticData = m.staticData;
      console.log('dataArr1', selector)
     //无参数即为查询Model全部数据
     if (selector === undefined || selector === null) {
       let dataArr = Object.keys(data);
-      fullNameChange(this, dataArr, this.tableName, arr);
+      fullNameChange(m, dataArr, m.tableName, arr);
       if (staticData) {
         let staticDataArr = Object.keys(staticData);
         staticDataArr.length > 0 && staticDataArr.forEach(name => {
@@ -46,7 +46,7 @@ export function select(selector: SelectParams) {
       let dataArr = Object.keys(data).filter((name) => {
         return !excludeList.includes(name);
       });
-      fullNameChange(this,dataArr,this.tableName,arr);
+      fullNameChange(m,dataArr,m.tableName,arr);
       if (staticData) {
         let staticDataArr = Object.keys(staticData);
         staticDataArr.length > 0 && staticDataArr.forEach(name => {
@@ -62,15 +62,15 @@ export function select(selector: SelectParams) {
       // selector 是普通对象
       let dataArr = Object.keys(selector);
       if (dataArr.length === 0) {
-        this.sqlSections.select = `SELECT `;
-        this.attrStr = ``
-        return this;
+        m.sqlSections.select = `SELECT `;
+        m.attrStr = ``
+        return m;
       } else {  
         console.log(selector, '是普通对象')
       }
     }
     console.log('非空结束')
-    this.sqlSections.select = `SELECT ${arr.join(',')}`;
-    this.attrStr = `${arr.join(',')}`;
-    return this;
+    m.sqlSections.select = `SELECT ${arr.join(',')}`;
+    m.attrStr = `${arr.join(',')}`;
+    return m;
 };
