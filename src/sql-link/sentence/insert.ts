@@ -8,7 +8,7 @@ import { inputValueFormat } from '../utils'
 export interface InsertParams {
     [propName: string]: any;
 }
-export function insert(m: Model, insertObj: InsertParams) {
+export function insert(m: Model, insertObj: InsertParams): Model {
     let data = m.data;
     let dataArr = Object.keys(data);
     let fieldArr: string[] = [];

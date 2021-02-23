@@ -16,7 +16,7 @@ export default class OssService {
     public static getAliYunOssPolicy(dir:string) {
       try {
         let expireTime = 30;
-        let targetDir: any = dir || '';
+        let targetDir: any = dir ?? '';
         let expireEndTime = Date.parse(new Date().toDateString()) + expireTime * 1000;
         let expireEndDate = new Date(expireEndTime);
         expireEndDate.setHours(expireEndDate.getHours(), expireEndDate.getMinutes() - expireEndDate.getTimezoneOffset());

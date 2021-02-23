@@ -153,7 +153,7 @@ export class Model {
    * @param selector {String} 查询配置
    * @return {AudioNode | void}
    */
-  mixin(spaceName: string, selector: string | undefined | SelectorDispatch | any[]) {
+  mixin(spaceName: string, selector: string | undefined | SelectorDispatch | any[]): Model {
     return mixin(this, spaceName, selector)
   }
   /**

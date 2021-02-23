@@ -28,7 +28,7 @@ export type KeyWithField =  Record<string, string>;
  * @param name
  * @return {*|string}
  */
-function getFullName(m: Model, name: string, spaceName?: string){
+function getFullName(m: Model, name: string, spaceName?: string): string {
   let fullName = '';
   let nameArr = name.split('.');
   if (nameArr.length === 1) {
@@ -54,7 +54,6 @@ function getFullName(m: Model, name: string, spaceName?: string){
       fullName = (joinModelName ? joinModelName : m.tableName) + '.' + contextFieldName;
     }
   }
-
   return fullName;
 }
 export function join(m: Model, joinObj: JoinParams): Model {

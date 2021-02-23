@@ -35,7 +35,7 @@ export class SqlLink {
     /**
      * 数据库初始化
      */
-    poolInit(dbConfig: PoolOptions) {
+    poolInit(dbConfig: PoolOptions): void {
         this.dbConfig = dbConfig;
         this.pool = mysql.createPool(dbConfig);
     }
@@ -44,7 +44,7 @@ export class SqlLink {
      * 对象列表数据绑定
      * @param modelPath {Object} 数据库model
      */
-    dataBind(modelPath: string) {
+    dataBind(modelPath: string): void {
         let models: Record<string, Model> = Object.create(null);
         let _models: Record<string, string> = Object.create(null);
         let modelLists: string[] = this.findModel(modelPath);

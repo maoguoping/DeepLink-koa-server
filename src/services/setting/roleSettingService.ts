@@ -46,9 +46,9 @@ export default class RoleSettingService {
     /**
      * 验证角色是否存在
      */
-    public static async checkRoleExist(roleInfo: any, type: string) {
-        let {roleName, roleId} = roleInfo;
-        if (type == 'new') {
+    public static async checkRoleExist(roleInfo: any) {
+        let {roleName, roleId, type } = roleInfo;
+        if (type == 'add') {
             return await Models.role.select().where(
                 Fn.or([
                     {roleId},

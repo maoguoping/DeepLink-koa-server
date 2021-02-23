@@ -5,7 +5,7 @@ interface Definition {
     [propName: string]: any;
   }): any;
 }
-function arrStringChange(list: any[]) {
+function arrStringChange(list: any[]): any[] {
   let returnList = [];
   if (list.length > 0) {
     if (typeof list[0] === 'string' ) {

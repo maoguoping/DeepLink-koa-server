@@ -1,6 +1,6 @@
 import { Dispatch, SelectorDispatch } from './dispatch'
 import { Model } from './model';
-export function mixin(m: Model, spaceName: string, selector: string | undefined | SelectorDispatch | any[]) {
+export function mixin(m: Model, spaceName: string, selector: string | undefined | SelectorDispatch | any[]): Model {
   let _keyWithField: Record<string, string> = m._keyWithField;
   let _this = m;
   function handleStaticData (staticData: any): string[] {

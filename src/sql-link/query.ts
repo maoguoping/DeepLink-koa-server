@@ -9,7 +9,7 @@ export function query (model: Model): Promise<Model>{
     if (sections.select) {
       _sql += ` FROM ${model.tableName}`
     }
-    _sql += sections.join || '';
+    _sql += sections.join ?? '';
     if (sections.where) {
       _sql += ` WHERE ${sections.where}`
     }
@@ -42,7 +42,7 @@ export function queryTest (model: Model): string{
   if (sections.select) {
     _sql += ` FROM ${model.tableName}`
   }
-  _sql += sections.join || '';
+  _sql += sections.join ?? '';
   if (sections.where) {
     _sql += ` WHERE ${sections.where}`
   }

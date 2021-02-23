@@ -4,7 +4,7 @@ export const ACTION_TYPE_LIST: string[] = [
 	'update',
 	'select'
 ]
-export const MYSQL_KEYWORDS: any = {
+export const MYSQL_KEYWORDS: Record<string, boolean> = {
 	ADD: true, ALL: true, ALTER: true,
 	ANALYZE: true, AND: true, AS: true,
 	ASC: true, ASENSITIVE: true, BEFORE: true,

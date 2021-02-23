@@ -17,8 +17,8 @@ export class ModelList {
         let sqlList = this.list.map((_this)=>{
             let _sql ='';
             let sections = _this.sqlSections;
-            _sql += sections.insert||sections.delete||sections.update||sections.select;
-            if(sections.select){
+            _sql += sections.insert || sections.delete || sections.update || sections.select;
+            if(sections?.select){
                 _sql += ` FROM ${_this.tableName}`
             }
             _sql += sections.join ? `JOIN ${sections.where}` : '';
@@ -37,7 +37,7 @@ export class ModelList {
                 throw new Error(err)
             }
         }
-        function fn(sql: string) {
+        function fn(sql: string): Promise<any> {
             return new Promise((resolve, reject) => {
                 pool.getConnection((err, connection: PoolConnection) => {
                     connection.query(sql, (err, results, fields) => {

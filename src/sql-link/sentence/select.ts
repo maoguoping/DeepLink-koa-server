@@ -10,7 +10,7 @@ export interface SelectParams {
     [propName: string]: any;
 }
 // select 名称变换
-function fullNameChange (that: Model, dataArr: string[], tableName: string, arr: string[]) {
+function fullNameChange (that: Model, dataArr: string[], tableName: string, arr: string[]): void {
   dataArr.length > 0 && dataArr.forEach((name: string) => {
     let nameStr = dealMysqlKeyword(name)
     let fullName = `${tableName}.${that[name]}`;
@@ -18,7 +18,7 @@ function fullNameChange (that: Model, dataArr: string[], tableName: string, arr:
     arr.push(`${fullName} AS ${nameStr}`);
   });
 }
-export function select(m: Model, selector?: string | undefined | SelectorDispatch | any[] | Record<string, any>) {
+export function select(m: Model, selector?: string | undefined | SelectorDispatch | any[] | Record<string, any>): Model {
     //标注类型
     m.clearSqlSections();
     m.actionType = 'select';

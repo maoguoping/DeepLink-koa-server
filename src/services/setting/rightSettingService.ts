@@ -108,18 +108,20 @@ export default class RightSettingService {
     /**
      * 验证权限是否存在
      */
-    public static async checkRightExist(rightInfo: any, type: string) {
-        let {rightName, rightId} = rightInfo;
+    public static async checkRightExist(rightInfo: any) {
+        let {rightName, rightId, type} = rightInfo;
         if (type == 'new') {
             return await Models.right.select().where(
                 {
-                    'right.rightName': rightName
+                    'right.rightName': rightName,
+                    'right.rightId': rightId
                 }
             ).query()
         } else {
             return await Models.right.select().where(
                 {
-                    'right.rightName': rightName
+                    'right.rightName': rightName,
+                    'right.rightId': rightId
                 }
             ).query()
         }

@@ -19,8 +19,8 @@ class FnObj {
     this.childResolveList = [];
     this.currentOutput = '';
     this.srcParam = param;
-    this.param = param.param || param;
-    this.isFn = param.isFn || false;
+    this.param = param.param ?? param;
+    this.isFn = param.isFn ?? false;
     this.contextModels = this.currentModel.context.Models;
     if (this.isFn) {
       this.currentFn = this.srcParam.name;
@@ -75,7 +75,7 @@ class FnObj {
    * obj解析函数
    * @param  obj {object}
    */
-  objResolve(obj: any) {
+  objResolve(obj: any): string {
     let objKeyArr = Object.keys(obj);
     let outputArr: string[] = [];
     let simpleResolve = (obj: any, fullname: string) => {
@@ -97,9 +97,9 @@ class FnObj {
     objKeyArr.forEach((item) => {
       let objVal = obj[item];
       let fullName = this.getFullName(item);
-      if (objVal.isFn){
+      if (objVal?.isFn){
         // 值为空跳过语句
-        if(objVal.name === 'equalEmptyAll') {
+        if(objVal?.name === 'equalEmptyAll') {
           let val = objVal.param.value;
           let fn = objVal.param.fn;
           if (!(val === '' || val === undefined || val === null || val.length == 0)) {
@@ -126,7 +126,7 @@ class FnObj {
    * @param list
    * @return {Array}
    */
-  arrStringChange(list: any[]) {
+  arrStringChange(list: any[]): any[] {
     let returnList = [];
     if (list.length > 0) {
       if (typeof list[0] === 'string' ) {
@@ -143,7 +143,7 @@ class FnObj {
    * @param name
    * @return {*|string}
    */
-  getFullName(name: string){
+  getFullName(name: string): string {
     let fullName = '';
     let nameArr = name.split('.');
     if (nameArr.length === 1) {

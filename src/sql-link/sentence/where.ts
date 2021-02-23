@@ -5,7 +5,7 @@ export type  WhereParams = string | any | object
  * SQL 条件
  * @param whereObj {Object}
  */
-export function where(m: Model, whereObj: WhereParams) {
+export function where(m: Model, whereObj: WhereParams): Model {
     //参数为sql语句
   if (typeof whereObj == 'string'){
     m.sqlSections.where = `${whereObj}`;

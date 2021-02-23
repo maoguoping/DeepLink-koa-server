@@ -7,7 +7,7 @@ export interface UpdateParams {
  * @param updateObj {Object} 查询配置
  * @return {AudioNode | void}
  */
-export function update(m: Model, updateObj: UpdateParams) {
+export function update(m: Model, updateObj: UpdateParams): Model {
     let arr: string[] = [];
     let updateObjArr = Object.keys(updateObj);
     updateObjArr.length > 0 &&　updateObjArr.forEach(name => {
