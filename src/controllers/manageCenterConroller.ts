@@ -1,11 +1,14 @@
-import { Controller, Param, Body, Get, Post, Put, Delete } from "routing-controllers";
+import { Controller, Param, Body, Get, Post, Put, Delete, UseBefore } from "routing-controllers";
 import ProjectService from '../services/manage-center/projectService';
 import ModuleService from '../services/manage-center/moduleService';
 import ElementService from '../services/manage-center/elementService';
 import Page from '../page'
+import { validator } from '../middlewares/validator';
+import { getViewDataByPathIdRule, addProjectRule, updateProjectRule, deleteProjectRule, addModuleRule, updateModuleRule, deleteModuleRule, getInfoByPathIdRule } from '../rules/props'
 @Controller()
 export class ApiController {
     @Post("/manageCenter/getViewDataByPathId")
+    @UseBefore(validator(getViewDataByPathIdRule))
     async getViewDataByPathId(@Body() body: any) {
         try {
             let pathId = body.pathId,
@@ -38,6 +41,7 @@ export class ApiController {
     }
 
     @Post("/manageCenter/addProject")
+    @UseBefore(validator(addProjectRule))
     async addProject(@Body() body: any) {
         try {
             return await ProjectService.addProject(body);
@@ -47,6 +51,7 @@ export class ApiController {
     }
 
     @Post("/manageCenter/updateProject")
+    @UseBefore(validator(updateProjectRule))
     async updateProject(@Body() body: any) {
         try {
             return await ProjectService.updateProject(body);
@@ -56,6 +61,7 @@ export class ApiController {
     }
 
     @Post("/manageCenter/deleteProject")
+    @UseBefore(validator(deleteProjectRule))
     async deleteProject(@Body() body: any) {
         try {
             return await ProjectService.deleteProject(body);
@@ -65,6 +71,7 @@ export class ApiController {
     }
 
     @Post("/manageCenter/addModule")
+    @UseBefore(validator(addModuleRule))
     async addModule(@Body() body: any) {
         try {
             return await ModuleService.addModule(body);
@@ -74,6 +81,7 @@ export class ApiController {
     }
 
     @Post("/manageCenter/updateModule")
+    @UseBefore(validator(updateModuleRule))
     async updateModule(@Body() body: any) {
         try {
             return await ModuleService.updateModule(body);
@@ -83,6 +91,7 @@ export class ApiController {
     }
 
     @Post("/manageCenter/deleteModule")
+    @UseBefore(validator(deleteModuleRule))
     async deleteModule(@Body() body: any) {
         try {
             return await ModuleService.deleteModule(body);
@@ -92,6 +101,7 @@ export class ApiController {
     }
 
     @Post("/manageCenter/getInfoByPathId")
+    @UseBefore(validator(getInfoByPathIdRule))
     async getInfoByPathId(@Body() body: any) {
         try {
             let path = body.pathId ?? "";

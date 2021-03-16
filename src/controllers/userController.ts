@@ -2,9 +2,12 @@ import { Action, Controller, Param, Body, Get, Post, Put, Delete, State, UseBefo
 import UserService from '../services/common/UserService';
 import jwt = require('jsonwebtoken');
 import passport from '../passport';
+import { validator } from '../middlewares/validator';
+import { loginInfoRule, registerInfoRule, pageAcceessListRule } from '../rules/props'
 @Controller()
 export class UserController {
      @Post("/users/login")
+     @UseBefore(validator(loginInfoRule))
      async login(@Body() body: any) {
           try {
                let username = body.username,
@@ -19,6 +22,7 @@ export class UserController {
           }
      }
      @Post("/users/register")
+     @UseBefore(validator(registerInfoRule))
      async register(@Body() body: any, action: Action) {
           try {
                let userInfo = {
@@ -56,6 +60,7 @@ export class UserController {
           }
      }
      @Post("/users/getPageAcceessList")
+     @UseBefore(validator(pageAcceessListRule))
      async getPageAcceessList(@Body() body: any, action: Action) {
           try {
                let data = await UserService.getPageAcceessList(body.userId)

@@ -4,6 +4,8 @@ import RoleSettingService from '../services/setting/roleSettingService';
 import RightSettingService from '../services/setting/rightSettingService';
 import { IGetRightListParams, IGetRoleListParams, IGetUserListParams} from '../typings/service';
 import passport from '../passport';
+import { validator } from '../middlewares/validator';
+import { userInfoRule, roleInfoRule, rightInfoRule, updateRightInfoRule } from '../rules/props'
 @Controller()
 export class SettingController {
     // 获取用户列表
@@ -22,6 +24,7 @@ export class SettingController {
     // 保存用户信息
     @Post("/setting/saveUserInfo")
     @UseBefore(passport.authenticate('jwt', {session: false}))
+    @UseBefore(validator(userInfoRule))
     async saveUserInfo(@Body() body: any) {
         try {
             let userInfo: any = body;
@@ -58,6 +61,7 @@ export class SettingController {
     // 新增角色
     @Post("/setting/addRole")
     @UseBefore(passport.authenticate('jwt', {session: false}))
+    @UseBefore(validator(roleInfoRule))
     async addRole(@Body() body: any) {
         try {
             let roleInfo: any = body;
@@ -118,6 +122,7 @@ export class SettingController {
     // 更新权限
     @Post("/setting/updateRight")
     @UseBefore(passport.authenticate('jwt', {session: false}))
+    @UseBefore(validator(updateRightInfoRule))
     async updateRight(@Body() body: any) {
         try {
             let rightInfo: any = body;
@@ -130,6 +135,7 @@ export class SettingController {
     // 删除权限
     @Post("/setting/deleteRight")
     @UseBefore(passport.authenticate('jwt', {session: false}))
+    @UseBefore(validator(rightInfoRule))
     async deleteRight(@Body() body: any) {
         try {
             let rightInfo: any = body;
@@ -154,6 +160,7 @@ export class SettingController {
     // 修改角色权限
     @Post("/setting/changeRoleRight")
     @UseBefore(passport.authenticate('jwt', {session: false}))
+
     async changeRoleRight(@Body() body: any) {
         try {
             let changeInfo: any = body;
