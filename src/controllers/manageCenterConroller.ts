@@ -1,4 +1,5 @@
 import { Controller, Param, Body, Get, Post, Put, Delete, UseBefore } from "routing-controllers";
+import cacheControl = require('koa-cache-control');
 import ProjectService from '../services/manage-center/projectService';
 import ModuleService from '../services/manage-center/moduleService';
 import ElementService from '../services/manage-center/elementService';
@@ -102,6 +103,7 @@ export class ApiController {
 
     @Post("/manageCenter/getInfoByPathId")
     @UseBefore(validator(getInfoByPathIdRule))
+    @UseBefore(cacheControl({ noCache: true }))
     async getInfoByPathId(@Body() body: any) {
         try {
             let path = body.pathId ?? "";

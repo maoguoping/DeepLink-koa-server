@@ -1,4 +1,5 @@
 import { Controller, Param, Body, Get, Post, Put, Delete, Ctx, UseBefore, State } from "routing-controllers";
+import cacheControl = require('koa-cache-control');
 import UserSettingService from '../services/setting/userSettingService';
 import RoleSettingService from '../services/setting/roleSettingService';
 import RightSettingService from '../services/setting/rightSettingService';
@@ -11,6 +12,7 @@ export class SettingController {
     // 获取用户列表
     @Post("/setting/getUserList")
     @UseBefore(passport.authenticate('jwt', {session: false}))
+    @UseBefore(cacheControl({ noCache: true }))
     async getUserList(@Body() body: any, @Ctx() ctx: any) {
         try {
             console.log('ctx', ctx);

@@ -1,12 +1,14 @@
 import { Action, Controller, Param, Body, Get, Post, Put, Delete, State, UseBefore } from "routing-controllers";
-import UserService from '../services/common/UserService';
+import cacheControl = require('koa-cache-control');
 import jwt = require('jsonwebtoken');
 import passport from '../passport';
 import { validator } from '../middlewares/validator';
+import UserService from '../services/common/UserService';
 import { loginInfoRule, registerInfoRule, pageAcceessListRule } from '../rules/props'
 @Controller()
 export class UserController {
      @Post("/users/login")
+     @UseBefore(cacheControl({ noStore: true }))
      @UseBefore(validator(loginInfoRule))
      async login(@Body() body: any) {
           try {
@@ -22,6 +24,7 @@ export class UserController {
           }
      }
      @Post("/users/register")
+     @UseBefore(cacheControl({ noStore: true }))
      @UseBefore(validator(registerInfoRule))
      async register(@Body() body: any, action: Action) {
           try {
@@ -38,6 +41,7 @@ export class UserController {
           }
      }
      @Get("/users/loginStatus")
+     @UseBefore(cacheControl({ noStore: true }))
      @UseBefore(passport.authenticate('jwt', {session: false}))
      async loginStatus(@Body() body: any, @State() state: any) {
           try {
@@ -52,6 +56,7 @@ export class UserController {
           }
      }
      @Post("/users/logout")
+     @UseBefore(cacheControl({ noStore: true }))
      async logout(@Body() body: any, action: Action) {
           try {
                return {success: true, message: '退出成功'};
@@ -60,6 +65,7 @@ export class UserController {
           }
      }
      @Post("/users/getPageAcceessList")
+     @UseBefore(cacheControl({ noCache: true }))
      @UseBefore(validator(pageAcceessListRule))
      async getPageAcceessList(@Body() body: any, action: Action) {
           try {
