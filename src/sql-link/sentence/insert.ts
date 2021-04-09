@@ -13,7 +13,7 @@ export function insert(m: Model, insertObj: InsertParams): Model {
     let dataArr = Object.keys(data);
     let fieldArr: string[] = [];
     let valueArr: string[] = [];
-    if(Array.isArray(insertObj)  && insertObj.length > 0 ){
+    if(Array.isArray(insertObj) && insertObj.length > 0 ){
         // 获取插入对象的真实field
         let nameArr = Object.keys(insertObj[0]);
         fieldArr = nameArr.map( obj => m[obj]);

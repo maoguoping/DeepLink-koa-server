@@ -19,7 +19,7 @@ export class ApiController {
                 page = new Page('listView');
             page.currentPage = body.currentPage;
             page.pageSize = body.pageSize;
-            let order = body.order;
+            let order: BaseType.Order = body.order;
             let name = body.sortBy,
                 index = body.currentPage,
                 size = body.pageSize;

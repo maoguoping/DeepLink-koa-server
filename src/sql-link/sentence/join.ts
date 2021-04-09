@@ -4,8 +4,9 @@ import { Model } from "../model";
  * @param insertObj {Object} 插入配置
  * @return {AudioNode | void}
  */
+export type JoinFun = (join: any) => any
 export interface JoinParams {
-    [propName: string]: any;
+    [propName: string]: JoinFun | JoinFun[];
 }
 export type SelectGroupOption = {
   name: string,

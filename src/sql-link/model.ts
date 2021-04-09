@@ -3,7 +3,7 @@ import {logger} from './log';
 import FnObj from './FnObj';
 import { Dispatch, SelectorDispatch } from './dispatch';
 import { query, queryTest } from './query';
-import { join, SelectGroup, JoinField, KeyWithField } from './sentence/join';
+import { join, SelectGroup, JoinField, KeyWithField, JoinParams } from './sentence/join';
 import { select, SelectParams } from './sentence/select';
 import { where, WhereParams } from './sentence/where';
 import { insert, InsertParams } from './sentence/insert';
@@ -129,7 +129,7 @@ export class Model {
    * SQL 关联
    * @param joinObj {Object}
    */
-  join(joinObj: {[propName: string]: any}): Model {
+  join(joinObj: JoinParams): Model {
     return join(this, joinObj);
   }
 

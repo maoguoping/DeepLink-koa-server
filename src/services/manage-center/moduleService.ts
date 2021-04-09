@@ -12,7 +12,7 @@ export default class ModuleService {
   /**
    * 根据父节点路径查找模块
    */
-  public static async getModuleListByParentPathId(parentPathId: string, name: string, order: any, index: number, size: number) {
+  public static async getModuleListByParentPathId(parentPathId: string, name: string, order: BaseType.Order, index: number, size: number) {
     let page = new Page(
       Models.module.select().join({
         folderType: [

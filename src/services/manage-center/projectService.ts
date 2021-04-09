@@ -64,7 +64,7 @@ export default class ProjectService {
     /**
      * 获取项目列表
      */
-    public static async getProjectList(name: string, order: any, index: number, size: number) {
+    public static async getProjectList(name: string, order: BaseType.Order, index: number, size: number) {
       let page = new Page(Models.project.select(),{
         order:{
           by:name,

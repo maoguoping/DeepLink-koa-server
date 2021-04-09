@@ -2,7 +2,7 @@ export interface IPageParams {
     index: number;
     pageSize: number;
     orderName: string;
-    orderType: string;
+    orderType: BaseType.Order;
 }
 export interface IGetRightListParams extends IPageParams{
     rightName?: string;
