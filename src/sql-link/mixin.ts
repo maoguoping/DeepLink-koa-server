@@ -1,6 +1,7 @@
 import { Dispatch, SelectorDispatch } from './dispatch'
 import { Model } from './model';
 type KeyWithField = Record<string, string>
+type Selector = string | undefined | SelectorDispatch | any[]
 function handleStaticData (staticData: any, keyWithField: KeyWithField): string[] {
   let staticDataArr = Object.keys(staticData);
   let arr:string [] = []
@@ -20,9 +21,8 @@ function handleDataArr(m: Model, dataArr: any, keyWithField: KeyWithField, space
   });
   return arr
 }
-export function mixin(m: Model, spaceName: string, selector: string | undefined | SelectorDispatch | any[]): Model {
-  let _keyWithField: Record<string, string> = m._keyWithField;
-  let _this = m;
+export function mixin(m: Model, spaceName: string, selector: Selector): Model {
+  let _keyWithField: KeyWithField = m._keyWithField;
   if (selector == '' || selector == undefined) {
     let arr: string[] = [];
     let data = m.data;
