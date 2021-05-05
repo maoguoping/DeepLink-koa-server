@@ -111,6 +111,5 @@ export const deleteModuleRule: Rule = {
   id: moduleId
 }
 export const getInfoByPathIdRule: Rule = {
-  pathId: pathIdWithEmpty,
-  path: path
+  pathId: pathIdWithEmpty
 }
