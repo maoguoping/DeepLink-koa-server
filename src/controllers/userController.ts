@@ -23,13 +23,34 @@ export class UserController {
                return err;
           }
      }
+     @Post("/users/wxLogin")
+     @UseBefore(cacheControl({ noStore: true }))
+     @UseBefore(validator(loginInfoRule))
+     async wxLogin(@Body() body: any) {
+          try {
+               let username = body.username,
+                    password = body.password;
+               let loginResult = await UserService.login(username, password);
+               //登录成功
+               let payload = { username: body.username, password: body.password };
+               let token = jwt.sign(payload, 'secret');
+               return { message: "登录成功！", username: body.username, token: token };
+          } catch (err) {
+               return err;
+          }
+     }
      @Post("/users/wxMiniProLogin")
      @UseBefore(cacheControl({ noStore: true }))
      async wxMiniProLogin(@Body() body: any) {
           try {
                let wxMiniProCode = body.code
-               await UserService.wxMiniProLogin(wxMiniProCode);
-               return { message: "登录成功！", code: wxMiniProCode, token: '' };
+               let loginRes =  await UserService.wxMiniProLogin(wxMiniProCode);
+               if (loginRes.token === '') {
+                    return { message: "需要登录", code: wxMiniProCode, token: '' };
+               } else {
+                    return { message: "登录成功！", code: wxMiniProCode, token: loginRes.token };
+               }
+               
           } catch (err) {
                return err;
           }

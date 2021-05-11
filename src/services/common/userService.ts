@@ -2,9 +2,9 @@ import sqlLink from '../../model';
 import { Fn, Page } from '../../sql-link';
 import IdUtils from '../../utils/idUtil';
 import { AliRam }  from '../../aliyun/aliYun';
-import * as User from '../../model/user'
-import axios from '../../utils/axios'
-import config from '../../config'
+import * as User from '../../model/user';
+import axios from '../../utils/axios';
+import config from '../../../config';
 const { Models } = sqlLink;
 export default class UserService {
     /**
@@ -267,6 +267,28 @@ export default class UserService {
             })
             let session_key = loginWxInfo.session_key,
             openid = loginWxInfo.openid
+            let res: any = await UserService.getUserInfoByWxOpenId(openid)
+            if (res.length > 0) {
+                return {
+                    token: ''
+                }
+            } else {
+                return {
+                    token: ''
+                }
+            }
+        } catch (err) {
+        }
+    }
+    public static async getUserInfoByWxOpenId(openId: string) {
+        try {
+            let results: any = Models.wxUserRelation.select({}).join({
+                user: 
+                   (join: any) =>  join('user.userId', 'wxUserRelation.userId')
+              }).where({
+                'openId': openId
+              }).query()
+              return results
         } catch (err) {
         }
     }
