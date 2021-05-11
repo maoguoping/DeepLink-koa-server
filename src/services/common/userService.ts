@@ -3,6 +3,8 @@ import { Fn, Page } from '../../sql-link';
 import IdUtils from '../../utils/idUtil';
 import { AliRam }  from '../../aliyun/aliYun';
 import * as User from '../../model/user'
+import axios from '../../utils/axios'
+import config from '../../config'
 const { Models } = sqlLink;
 export default class UserService {
     /**
@@ -253,5 +255,19 @@ export default class UserService {
             throw new Error(err)
         }
     }
-
+    public static async wxMiniProLogin(code: string) {
+        try {
+            let loginWxInfo: any = await axios.get('https://api.weixin.qq.com/sns/jscode2session', {
+                params: {
+                    appid: config.wxMiniPro.appId,
+                    secret: config.wxMiniPro.appSecret,
+                    js_code: code,
+                    grant_type: 'authorization_code'
+                }
+            })
+            let session_key = loginWxInfo.session_key,
+            openid = loginWxInfo.openid
+        } catch (err) {
+        }
+    }
 }

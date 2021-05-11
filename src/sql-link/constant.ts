@@ -1,4 +1,4 @@
-export const ACTION_TYPE_LIST: string[] = [
+export const ACTION_TYPE_LIST: ReadonlyArray<string> = [
 	'insert',
 	'delete',
 	'update',

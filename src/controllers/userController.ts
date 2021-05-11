@@ -23,6 +23,17 @@ export class UserController {
                return err;
           }
      }
+     @Post("/users/wxMiniProLogin")
+     @UseBefore(cacheControl({ noStore: true }))
+     async wxMiniProLogin(@Body() body: any) {
+          try {
+               let wxMiniProCode = body.code
+               await UserService.wxMiniProLogin(wxMiniProCode);
+               return { message: "登录成功！", code: wxMiniProCode, token: '' };
+          } catch (err) {
+               return err;
+          }
+     }
      @Post("/users/register")
      @UseBefore(cacheControl({ noStore: true }))
      @UseBefore(validator(registerInfoRule))
